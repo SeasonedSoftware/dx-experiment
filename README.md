@@ -20,32 +20,54 @@ This will create the following directory tree for your project:
 
 ## Writting your first project
 
-### Home page
-```
-const Home = ({ todos : Croods<Todo>, ...props }) => {
-  return <div/>
+### Define your api interface
+
+```typescript
+export interface TodoSchema extends Schema {
+  paths: {
+    'POST /todos': {
+      request: {
+        body: {
+          description: string
+        }
+      }
+      response: {
+        200: {
+          content: string;
+        }
+      }
+    }
+  }
 }
 
-export const getServerSideProps = { fetch: useCroodsFetch(options), create: useCroodsCreate(options) }
-```
-
-### Define your domain interface
-
-```
-export type Todo = {
-  description: string,
-  completedAt: number
-}
-```
-
-### Define your events
-
-```
 const postToExternalApi = async (description: String) : Promise<Task|Error> => {
   cont result = await tasks.create({ data: { description } })
   if(result.error){
     return { ... } : Error
   }
   return result.data : Task
+}
+
+const endpoints: Service<TodoSchema> = {
+  'POST /todos': makeService(postToExternalApi)
+};
+```
+
+### Home page
+
+```typescript
+const Home = ({ todos : Croods<Todo>, ...props }) => {
+  return <div/>
+}
+
+export const getServerSideProps = useCroods(endpoints, { name: 'todos' })
+```
+
+### Define your domain model
+
+```typescript
+export type Todo = {
+  description: string,
+  completedAt: number
 }
 ```

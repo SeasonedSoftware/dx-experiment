@@ -57,7 +57,21 @@ const endpoints: Service<TodoSchema> = {
 
 ```typescript
 const Home = ({ todos : Croods<Todo>, ...props }) => {
-  return <div/>
+  if (todos.validating) {
+    return 'Loading...'
+  }
+  return (
+    <div>
+      {todos.list.map(({ description }) => <p>{description}</p>)
+      <form onSubmit={(ev) => {
+        ev.preventDefault()
+        todos.send('create', { description: input.value })
+      }}>
+        <input ref={input} type="text" />
+        <button type="submit">Add</button>
+      </form>
+    </div>
+  )
 }
 
 export const getServerSideProps = useCroods(endpoints, { name: 'todos' })

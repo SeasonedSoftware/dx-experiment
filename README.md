@@ -20,38 +20,9 @@ This will create the following directory tree for your project:
 
 ## Writting your first project
 
-### Define your api interface
+### Define your API
 
-```typescript
-export interface TodoSchema extends Schema {
-  paths: {
-    'POST /todos': {
-      request: {
-        body: {
-          description: string
-        }
-      }
-      response: {
-        200: {
-          content: string;
-        }
-      }
-    }
-  }
-}
-
-const postToExternalApi = async (description: String) : Promise<Task|Error> => {
-  cont result = await tasks.create({ data: { description } })
-  if(result.error){
-    return { ... } : Error
-  }
-  return result.data : Task
-}
-
-const endpoints: Service<TodoSchema> = {
-  'POST /todos': makeService(postToExternalApi)
-};
-```
+We have moved the discussion of how to define the API to [architecture notes](docs/architecture-notes.md).
 
 ### Home page
 

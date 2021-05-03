@@ -20,32 +20,39 @@ This will create the following directory tree for your project:
 
 ## Writting your first project
 
+### Define your API
+
+We have moved the discussion of how to define the API to [architecture notes](docs/architecture-notes.md).
+
 ### Home page
-```
+
+```typescript
 const Home = ({ todos : Croods<Todo>, ...props }) => {
-  return <div/>
+  if (todos.validating) {
+    return 'Loading...'
+  }
+  return (
+    <div>
+      {todos.list.map(({ description }) => <p>{description}</p>)
+      <form onSubmit={(ev) => {
+        ev.preventDefault()
+        todos.send('create', { description: input.value })
+      }}>
+        <input ref={input} type="text" />
+        <button type="submit">Add</button>
+      </form>
+    </div>
+  )
 }
 
-export const getServerSideProps = { fetch: useCroodsFetch(options), create: useCroodsCreate(options) }
+export const getServerSideProps = useCroods(endpoints, { name: 'todos' })
 ```
 
-### Define your domain interface
+### Define your domain model
 
-```
+```typescript
 export type Todo = {
   description: string,
   completedAt: number
-}
-```
-
-### Define your events
-
-```
-const postToExternalApi = async (description: String) : Promise<Task|Error> => {
-  cont result = await tasks.create({ data: { description } })
-  if(result.error){
-    return { ... } : Error
-  }
-  return result.data : Task
 }
 ```

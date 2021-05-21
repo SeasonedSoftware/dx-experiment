@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import type { ZodTypeAny } from 'zod'
 import { PrismaClient } from '@prisma/client'
+import zipObject from 'lodash/zipObject'
 
 const prisma = new PrismaClient()
 
@@ -15,53 +16,62 @@ const taskUpdateParser = z.object({
 type Errors = Record<string, string>
 type Result = { success: true; data: any } | { success: false; errors: Errors }
 
-export type ActionResult = Result | Promise<Result>
+type ActionResult = Result | Promise<Result>
 
-export const onResult = (
+const onResult = (
   onError: (r: any) => any,
   onSuccess: (r: any) => any,
   r: Result,
 ) =>
   r.success ? onSuccess(r.data) : onError(r.errors)
 
-export const success = (r: any) => ({ success: true, data: r } as Result)
-export const error = (r: Errors) => ({ success: false, errors: r } as Result)
+const success = (r: any) => ({ success: true, data: r } as Result)
+const error = (r: Errors) => ({ success: false, errors: r } as Result)
 
-export type Transport = 'http' | 'websocket' | 'terminal'
+const ALL_TRANSPORTS = ['http', 'websocket', 'terminal'] as const
+type Transport = typeof ALL_TRANSPORTS[number]
 
-export type Action = {
+type Action = {
   transport: Transport
   mutation: boolean
   parser?: ZodTypeAny
   action: (input: any) => ActionResult
 }
 
-export type Actions = Record<string, Action>
+type Actions = Record<string, Action>
 
-const httpQuery: (action: (input: any) => ActionResult, parser?: ZodTypeAny) => Action =
-  (action, parser) => ({
-    transport: 'http',
-    mutation: false,
-    parser,
-    action,
-  })
+const allHelpers = ALL_TRANSPORTS.map((el) => (
+  {
+    query: (action: (input: any) => ActionResult, parser?: ZodTypeAny) =>
+    ({
+      transport: el,
+      mutation: false,
+      parser,
+      action,
+    } as Action),
 
-const httpMutation: (action: (input: any) => ActionResult, parser?: ZodTypeAny) => Action =
-  (action, parser) => ({
-    transport: 'http',
-    mutation: true,
-    parser,
-    action,
-  })
+    mutation: (action: (input: any) => ActionResult, parser?: ZodTypeAny) =>
+    ({
+      transport: el,
+      mutation: true,
+      parser,
+      action,
+    } as Action)
+  }
+))
 
-export const tasks: Actions = {
-  post: httpMutation(
+const makeAction = zipObject(ALL_TRANSPORTS, allHelpers)
+
+const { query, mutation } = makeAction.http
+
+const tasks: Actions = {
+  post: mutation(
     async (input: z.infer<typeof taskCreateParser>) =>
       success(await prisma.task.create({ data: input })),
     taskCreateParser,
   ),
-  get: httpQuery(async () => success(await prisma.task.findMany())),
-  delete: httpMutation(
+  get: query(async () => success(await prisma.task.findMany())),
+  delete: mutation(
     async (input: z.infer<typeof taskDeleteParser>) =>
       success(
         await prisma.task.delete({
@@ -70,7 +80,7 @@ export const tasks: Actions = {
       ),
     taskDeleteParser,
   ),
-  put: httpMutation(
+  put: mutation(
     async (input: z.infer<typeof taskUpdateParser>) =>
       success(
         await prisma.task.update({
@@ -80,11 +90,11 @@ export const tasks: Actions = {
       ),
     taskUpdateParser,
   ),
-  'send-completed-notifications': httpQuery((input: any) => {
+  'send-completed-notifications': query((input: any) => {
     console.log({ hello: 'world', superExpensiveOperation: true })
     return success(null)
   }),
-  'clear-completed': httpMutation(async () => {
+  'clear-completed': mutation(async () => {
     await prisma.task.deleteMany({
       where: { completed: true },
     })
@@ -92,7 +102,7 @@ export const tasks: Actions = {
   }),
 }
 
-export type DomainActions = Record<string, Actions>
+type DomainActions = Record<string, Actions>
 
 const rules: DomainActions = { tasks }
 
@@ -100,6 +110,6 @@ const findActionInDomain =
   (rules: DomainActions) => (namespace: string, actionName: string) =>
     rules[namespace]?.[actionName] as Action | undefined
 
-export const findAction = findActionInDomain(rules)
+const findAction = findActionInDomain(rules)
 
-export default rules
+export { Action, findAction, onResult }

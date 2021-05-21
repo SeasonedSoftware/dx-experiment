@@ -1,0 +1,26 @@
+{
+  "name": "jobs",
+  "version": "1.0.0",
+  "private": true,
+  "license": "ISC",
+  "prisma": {
+    "schema": "../domain-logic/db/schema.prisma"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc || node dist/server.js",
+    "lint:types": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "domain-logic": "link:../domain-logic",
+    "fastify": "^3.9.2",
+    "fastify-postgres": "^3.3.0",
+    "pg": "^8.5.1",
+    "pg-listen": "^1.7.0",
+    "prisma": "^2.22.1"
+  },
+  "devDependencies": {
+    "@types/node": "^15.3.0",
+    "typescript": "^4.2.4"
+  }
+}

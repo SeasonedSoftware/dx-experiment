@@ -4,17 +4,18 @@
 node_modules
 /.pnp
 .pnp.js
-*.tsbuildinfo
 
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
-
-# production
+# build folders
 /build
+dist/
+# next.js
+ui/.next/
+ui/out/
+# vercel
+.vercel
 
 # misc
 .DS_Store
@@ -32,8 +33,5 @@ yarn-error.log*
 .env.production.local
 .env
 
-# vercel
-.vercel
-.next
-
 *.db
+*.tsbuildinfo

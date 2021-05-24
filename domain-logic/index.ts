@@ -97,7 +97,11 @@ const tasks: Actions = {
   'send-completed-notifications': query((input: any) => {
     const payload = { hello: 'world', superExpensiveOperation: true }
     console.log({ payload })
-    publish('send-completed-notifications', payload)
+    publish('deliver-completed-notifications', payload)
+    return success(null)
+  }),
+  'deliver-completed-notifications': mutation((input: any) => {
+    console.log('deliver-completed-notifications event handler received: ', { input })
     return success(null)
   }),
   'clear-completed': mutation(async () => {

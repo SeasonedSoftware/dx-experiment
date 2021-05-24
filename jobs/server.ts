@@ -6,6 +6,8 @@ import rules from 'domain-logic'
 import { AddressInfo } from 'net'
 import { exit } from 'process'
 import dotenv from 'dotenv'
+import { onResult, Action, findAction } from 'domain-logic'
+import isNil from 'lodash/isNil'
 
 const result = dotenv.config()
 
@@ -33,9 +35,25 @@ const channel = process.env.CHANNEL as string
 // Accepts the same connection config object that the "pg" package would take
 const subscriber = createSubscriber({ connectionString: databaseURL })
 
-subscriber.notifications.on(channel, (payload) => {
+subscriber.notifications.on(channel, async (payload) => {
   // Payload as passed to subscriber.notify() (see below)
   console.log(`Received notification in '${channel}':`, payload)
+  const namespace = 'tasks'
+  const requestedAction = payload.channel
+  const maybeRequestedAction = findAction(namespace, requestedAction)
+  if (isNil(maybeRequestedAction)) {
+    console.error(`Could not find action ${requestedAction} in ${namespace}`)
+  }
+  else {
+    const resolvedAction: Action = maybeRequestedAction
+    const { action } = maybeRequestedAction
+    const taskResult = await action(payload)
+    return onResult(
+      (errors) => console.error({ errors }),
+      (data) => console.log({ data }),
+      taskResult,
+    )
+  }
 })
 
 subscriber.events.on('error', (error) => {

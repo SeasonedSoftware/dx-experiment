@@ -2,8 +2,12 @@ import { z } from 'zod'
 import type { ZodTypeAny } from 'zod'
 import { PrismaClient } from '@prisma/client'
 import zipObject from 'lodash/zipObject'
+import { makePrismaPublisher } from './publisher'
 
 const prisma = new PrismaClient()
+const databasePublihserChannel: string = process.env.CHANNEL ? process.env.CHANNEL : 'database-publisher-channel'
+
+const publish = makePrismaPublisher(prisma, databasePublihserChannel)
 
 const taskCreateParser = z.object({ text: z.string() })
 const taskDeleteParser = z.object({ id: z.string() })
@@ -91,7 +95,9 @@ const tasks: Actions = {
     taskUpdateParser,
   ),
   'send-completed-notifications': query((input: any) => {
-    console.log({ hello: 'world', superExpensiveOperation: true })
+    const payload = { hello: 'world', superExpensiveOperation: true }
+    console.log({ payload })
+    publish('send-completed-notifications', payload)
     return success(null)
   }),
   'clear-completed': mutation(async () => {

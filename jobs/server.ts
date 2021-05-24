@@ -4,17 +4,38 @@ import fastifyPostgres from 'fastify-postgres'
 import createSubscriber from 'pg-listen'
 import rules from 'domain-logic'
 import { AddressInfo } from 'net'
+import { exit } from 'process'
+import dotenv from 'dotenv'
 
-console.log('TEST', rules)
+const result = dotenv.config()
 
-const databaseURL: string = 'postgres://postgres@localhost/postgres'
+if (result.error) {
+  throw result.error
+}
+
+console.log("Running with environment loaded from .env: ", result.parsed)
+
+if (process.env.CHANNEL === undefined) {
+  console.error("Please provide a value for CHANNEL environment variable")
+  console.log({ DATABASE_URL: process.env.CHANNEL })
+  exit(1)
+}
+
+if (process.env.DATABASE_URL === undefined) {
+  console.error("Please provide a value for DATABASE_URL environment variable")
+  console.log({ DATABASE_URL: process.env.DATABASE_URL })
+  exit(1)
+}
+
+const databaseURL = process.env.DATABASE_URL as string
+const channel = process.env.CHANNEL as string
 
 // Accepts the same connection config object that the "pg" package would take
 const subscriber = createSubscriber({ connectionString: databaseURL })
 
-subscriber.notifications.on('my-channel', (payload) => {
+subscriber.notifications.on(channel, (payload) => {
   // Payload as passed to subscriber.notify() (see below)
-  console.log("Received notification in 'my-channel':", payload)
+  console.log(`Received notification in '${channel}':`, payload)
 })
 
 subscriber.events.on('error', (error) => {
@@ -30,7 +51,7 @@ process.on('exit', () => {
 
 const connectPgListener = async () => {
   await subscriber.connect()
-  await subscriber.listenTo('my-channel')
+  await subscriber.listenTo(channel)
 }
 
 const server = fastify({ logger: true })

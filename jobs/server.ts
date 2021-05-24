@@ -2,12 +2,12 @@
 import fastify from 'fastify'
 import fastifyPostgres from 'fastify-postgres'
 import createSubscriber from 'pg-listen'
-import rules from 'domain-logic'
 import { AddressInfo } from 'net'
 import { exit } from 'process'
 import dotenv from 'dotenv'
 import { onResult, Action, findAction } from 'domain-logic'
 import isNil from 'lodash/isNil'
+import split from 'lodash/split'
 
 const result = dotenv.config()
 
@@ -35,11 +35,10 @@ const channel = process.env.CHANNEL as string
 // Accepts the same connection config object that the "pg" package would take
 const subscriber = createSubscriber({ connectionString: databaseURL })
 
-subscriber.notifications.on(channel, async (payload) => {
+subscriber.notifications.on(channel, async (msg) => {
   // Payload as passed to subscriber.notify() (see below)
-  console.log(`Received notification in '${channel}':`, payload)
-  const namespace = payload.channel
-  const requestedAction = payload.actionName
+  console.log(`Received notification in '${channel}':`, msg)
+  const [namespace, requestedAction] = split(msg.channel, '/')
   const maybeRequestedAction = findAction(namespace, requestedAction)
   if (isNil(maybeRequestedAction)) {
     console.error(`Could not find action ${requestedAction} in ${namespace}`)
@@ -47,7 +46,7 @@ subscriber.notifications.on(channel, async (payload) => {
   else {
     const resolvedAction: Action = maybeRequestedAction
     const { action } = maybeRequestedAction
-    const taskResult = await action(payload)
+    const taskResult = await action(msg.payload)
     return onResult(
       (errors) => console.error({ errors }),
       (data) => console.log({ data }),

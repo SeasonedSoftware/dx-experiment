@@ -3,9 +3,10 @@ import merge from 'lodash/merge'
 
 const prisma = new PrismaClient()
 
-const makePrismaPublisher: (prismaClient: PrismaClient, dbChannel: string) => (channel: string, payload: any) => void =
+const makePrismaPublisher: (prismaClient: PrismaClient, dbChannel: string) => (channel: string) => (actionName: string, payload: any) => void =
     (prismaClient, dbChannel) =>
-        async (channel, payload) =>
-            await prismaClient.$executeRaw`SELECT pg_notify(${dbChannel}, ${merge({}, payload, { channel })})`
+        (channel) =>
+            async (actionName, payload) =>
+                await prismaClient.$executeRaw`SELECT pg_notify(${dbChannel}, ${merge({}, payload, { channel, actionName })})`
 
 export { makePrismaPublisher }

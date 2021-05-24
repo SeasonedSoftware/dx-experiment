@@ -38,8 +38,8 @@ const subscriber = createSubscriber({ connectionString: databaseURL })
 subscriber.notifications.on(channel, async (payload) => {
   // Payload as passed to subscriber.notify() (see below)
   console.log(`Received notification in '${channel}':`, payload)
-  const namespace = 'tasks'
-  const requestedAction = payload.channel
+  const namespace = payload.channel
+  const requestedAction = payload.actionName
   const maybeRequestedAction = findAction(namespace, requestedAction)
   if (isNil(maybeRequestedAction)) {
     console.error(`Could not find action ${requestedAction} in ${namespace}`)

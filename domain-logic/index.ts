@@ -5,9 +5,9 @@ import zipObject from 'lodash/zipObject'
 import { makePrismaPublisher } from './publisher'
 
 const prisma = new PrismaClient()
-const databasePublihserChannel: string = process.env.CHANNEL ? process.env.CHANNEL : 'database-publisher-channel'
+const databasePublihserChannel: string = process.env.CHANNEL ?? 'database-publisher-channel'
 
-const publish = makePrismaPublisher(prisma, databasePublihserChannel)
+const publishInNamespace = makePrismaPublisher(prisma, databasePublihserChannel)
 
 const taskCreateParser = z.object({ text: z.string() })
 const taskDeleteParser = z.object({ id: z.string() })
@@ -67,6 +67,8 @@ const allHelpers = ALL_TRANSPORTS.map((el) => (
 const makeAction = zipObject(ALL_TRANSPORTS, allHelpers)
 
 const { query, mutation } = makeAction.http
+
+const publish = publishInNamespace('tasks')
 
 const tasks: Actions = {
   post: mutation(

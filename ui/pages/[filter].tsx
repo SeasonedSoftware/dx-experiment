@@ -10,6 +10,7 @@ import FooterInfo from 'components/footer-info'
 import ListFooter from 'components/list-footer'
 import Form from 'components/form'
 import { useCroods, useHydrate } from 'croods'
+import { Action, findAction, onResult } from 'domain-logic'
 
 import 'todomvc-app-css/index.css'
 import 'todomvc-common/base.css'
@@ -109,8 +110,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ filter: string }>,
 ) => {
-  const results = await fetch(`${baseUrl}/tasks`)
-  const allTasks: Task[] = await results.json()
+  const { action } = findAction("tasks", "get") as Action
+  const taskResult = await action(null)
+  const allTasks: Task[] = onResult(
+    (_errors) => [],
+    (data) => JSON.parse(JSON.stringify(data)),
+    taskResult,
+  )
+
   return {
     props: {
       filter: context.params?.filter ?? 'all',

@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc && node dist/server.js",
+    "start": "tsc && node dist/server.js",
     "lint:types": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {

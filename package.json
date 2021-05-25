@@ -12,6 +12,8 @@
     "dev:domain": "yarn w:domain dev",
     "dev:jobs": "yarn w:jobs dev",
     "dev:ui": "yarn w:ui dev",
+    "build": "yarn workspaces run build",
+    "postinstall": "yarn build",
     "lint": "yarn lint:types && yarn lint:eslint && yarn lint:prettier",
     "lint:eslint": "eslint ./",
     "lint:prettier": "prettier --check \"{**/*.js,**/*.jsx,**/*.ts,**/*.tsx}\"",

@@ -124,5 +124,4 @@ const findActionInDomain =
 
 const findAction = findActionInDomain(rules)
 
-export type { Action }
-export { findAction, onResult }
+export { Action, findAction, onResult }

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { ZodTypeAny } from 'zod'
+import { ZodTypeAny } from 'zod'
 import { PrismaClient } from '@prisma/client'
 import zipObject from 'lodash/zipObject'
 import { makePrismaPublisher } from './publisher'
@@ -124,4 +124,5 @@ const findActionInDomain =
 
 const findAction = findActionInDomain(rules)
 
-export { Action, findAction, onResult }
+export type { Action }
+export { findAction, onResult }

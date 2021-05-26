@@ -39,9 +39,9 @@ subscriber.notifications.on(channel, async (msg) => {
   // Payload as passed to subscriber.notify() (see below)
   console.log(`Received notification in '${channel}':`, msg)
   const [requestedAction, namespace] = split(msg.channel, '@')
-  const maybeRequestedAction = findAction(namespace, requestedAction)
+  const maybeRequestedAction = findAction('notification')(namespace, requestedAction)
   if (isNil(maybeRequestedAction)) {
-    console.error(`Could not find action ${requestedAction} in ${namespace}`)
+    console.error(`Could not find action ${requestedAction} in ${namespace}. Ensure the action transport is set to 'notification'`)
   }
   else {
     const resolvedAction: Action = maybeRequestedAction

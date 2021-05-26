@@ -32,7 +32,7 @@ const onResult = (
 const success = (r: any) => ({ success: true, data: r } as Result)
 const error = (r: Errors) => ({ success: false, errors: r } as Result)
 
-const ALL_TRANSPORTS = ['http', 'websocket', 'terminal'] as const
+const ALL_TRANSPORTS = ['http', 'websocket', 'terminal', 'notification'] as const
 type Transport = typeof ALL_TRANSPORTS[number]
 
 type Action = {
@@ -67,6 +67,7 @@ const allHelpers = ALL_TRANSPORTS.map((el) => (
 const makeAction = zipObject(ALL_TRANSPORTS, allHelpers)
 
 const { query, mutation } = makeAction.http
+const { mutation: notifyMutation } = makeAction.notification
 
 const publish = publishInNamespace('tasks')
 
@@ -102,7 +103,7 @@ const tasks: Actions = {
     publish('deliver-completed-notifications', payload)
     return success(null)
   }),
-  'deliver-completed-notifications': mutation((input: any) => {
+  'deliver-completed-notifications': notifyMutation((input: any) => {
     console.log('deliver-completed-notifications event handler received: ', { input })
     return success(null)
   }),
@@ -118,9 +119,17 @@ type DomainActions = Record<string, Actions>
 
 const rules: DomainActions = { tasks }
 
-const findActionInDomain =
-  (rules: DomainActions) => (namespace: string, actionName: string) =>
-    rules[namespace]?.[actionName] as Action | undefined
+const findActionInDomain:
+  (rules: DomainActions) =>
+    (transport: Transport) =>
+      (namespace: string, actionName: string) =>
+        Action | undefined =
+  (rules) =>
+    (transport) =>
+      (namespace, actionName) => {
+        const action = rules[namespace]?.[actionName]
+        return action && (action.transport === transport ? action : undefined)
+      }
 
 const findAction = findActionInDomain(rules)
 

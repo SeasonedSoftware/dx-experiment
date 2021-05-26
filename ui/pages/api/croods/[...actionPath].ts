@@ -3,6 +3,8 @@ import { Action, findAction, onResult } from 'domain-logic'
 import defaults from 'lodash/defaults'
 import isNil from 'lodash/isNil'
 
+const findHttpAction = findAction('http')
+
 const makeHandler =
   ({ mutation, parser, action }: Action) =>
     async (input: any, req: NextApiRequest, res: NextApiResponse) => {
@@ -22,9 +24,9 @@ const makeHandler =
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const [namespace, requestedAction] = req.query.actionPath as string[]
-  const maybeRequestedAction = findAction(namespace, requestedAction)
+  const maybeRequestedAction = findHttpAction(namespace, requestedAction)
   const maybeResolvedAction =
-    maybeRequestedAction || findAction(namespace, req.method!.toLowerCase())
+    maybeRequestedAction || findHttpAction(namespace, req.method!.toLowerCase())
 
   if (isNil(maybeResolvedAction)) {
     return res.status(404).end()

@@ -17,7 +17,7 @@ import 'todomvc-common/base.css'
 import { Task } from 'domain-logic/resources/task'
 import { CroodsTuple } from 'croods/dist/types/typeDeclarations'
 
-const baseUrl = 'http://localhost:3000/api/croods'
+const baseUrl = '/api/croods'
 const FILTERS = ['all', 'active', 'completed']
 const croodsConfig = {
   baseUrl,

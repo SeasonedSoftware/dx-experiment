@@ -7,6 +7,7 @@ import { exit } from 'process'
 import { onResult, Action, findAction } from 'domain-logic'
 import isNil from 'lodash/isNil'
 import split from 'lodash/split'
+import { ScheduledJob, scheduleEveryXSeconds, scheduleJobs } from './timer'
 
 if (process.env.CHANNEL === undefined) {
   console.error("Please provide a value for CHANNEL environment variable")
@@ -61,6 +62,13 @@ const connectPgListener = async () => {
   await subscriber.connect()
   await subscriber.listenTo(channel)
 }
+
+// Timer jobs
+const jobs: ScheduledJob[] = [
+  scheduleEveryXSeconds(10)('tasks', 'deliver-reminder-notifications')
+]
+const scheduledJobs = scheduleJobs(jobs)
+console.log("\nScheduling jobs:\n", { scheduledJobs })
 
 const server = fastify({ logger: true })
 

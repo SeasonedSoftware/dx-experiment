@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "description": "Demo application showing how to share code between NextJS projects in a monorepo",
   "workspaces": [
-    "ui",
     "domain-logic",
+    "ui",
     "jobs"
   ],
   "scripts": {

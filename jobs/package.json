@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "domain-logic": "link:../domain-logic",
-    "dotenv": "^10.0.0",
     "fastify": "^3.9.2",
     "fastify-postgres": "^3.3.0",
     "pg": "^8.5.1",

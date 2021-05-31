@@ -4,18 +4,9 @@ import fastifyPostgres from 'fastify-postgres'
 import createSubscriber from 'pg-listen'
 import { AddressInfo } from 'net'
 import { exit } from 'process'
-import dotenv from 'dotenv'
 import { onResult, Action, findAction } from 'domain-logic'
 import isNil from 'lodash/isNil'
 import split from 'lodash/split'
-
-const result = dotenv.config()
-
-if (result.error) {
-  throw result.error
-}
-
-console.log("Running with environment loaded from .env: ", result.parsed)
 
 if (process.env.CHANNEL === undefined) {
   console.error("Please provide a value for CHANNEL environment variable")

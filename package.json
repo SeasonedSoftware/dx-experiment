@@ -9,9 +9,9 @@
     "jobs"
   ],
   "scripts": {
-    "dev:domain": "yarn w:domain dev",
-    "dev:jobs": "yarn w:jobs dev",
-    "dev:ui": "yarn w:ui dev",
+    "dev:domain": "dotenv -e .env yarn w:domain dev",
+    "dev:jobs": "dotenv -e .env yarn w:jobs dev",
+    "dev:ui": "dotenv -e .env yarn w:ui dev",
     "build": "yarn workspaces run build",
     "lint": "yarn lint:types && yarn lint:eslint && yarn lint:prettier",
     "lint:eslint": "eslint ./",
@@ -29,6 +29,7 @@
     "@typescript-eslint/eslint-plugin": "^4.24.0",
     "@typescript-eslint/parser": "^4.24.0",
     "babel-eslint": "^10.1.0",
+    "dotenv-cli": "^4.0.0",
     "eslint": "^7.26.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",

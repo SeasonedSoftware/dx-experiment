@@ -7,6 +7,7 @@ import { exit } from 'process'
 import { onResult, Action, findAction } from 'domain-logic'
 import isNil from 'lodash/isNil'
 import split from 'lodash/split'
+import schedule from './schedule'
 
 if (process.env.CHANNEL === undefined) {
   console.error("Please provide a value for CHANNEL environment variable")
@@ -61,6 +62,9 @@ const connectPgListener = async () => {
   await subscriber.connect()
   await subscriber.listenTo(channel)
 }
+
+// Timer jobs
+schedule()
 
 const server = fastify({ logger: true })
 

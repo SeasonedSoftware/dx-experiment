@@ -32,7 +32,7 @@ const onResult = (
 const success = (r: any) => ({ success: true, data: r } as Result)
 const error = (r: Errors) => ({ success: false, errors: r } as Result)
 
-const ALL_TRANSPORTS = ['http', 'websocket', 'terminal', 'notification'] as const
+const ALL_TRANSPORTS = ['http', 'websocket', 'terminal', 'notification', 'timer'] as const
 type Transport = typeof ALL_TRANSPORTS[number]
 
 type Action = {
@@ -68,6 +68,7 @@ const makeAction = zipObject(ALL_TRANSPORTS, allHelpers)
 
 const { query, mutation } = makeAction.http
 const { mutation: notifyMutation } = makeAction.notification
+const { mutation: timerMutation } = makeAction.timer
 
 const publish = publishInNamespace('tasks')
 
@@ -107,6 +108,11 @@ const tasks: Actions = {
     console.log('deliver-completed-notifications event handler received: ', { input })
     return success(null)
   }),
+  'deliver-reminder-notifications': timerMutation((input: any) => {
+    console.log('deliver-reminder-notifications event handler received: ', { input })
+    return success(null)
+  }),
+
   'clear-completed': mutation(async () => {
     await prisma.task.deleteMany({
       where: { completed: true },

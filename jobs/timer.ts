@@ -79,9 +79,6 @@ const scheduleAction:
 
 const scheduleEveryXSeconds = compose(scheduleAction, everyXSeconds)
 
-const jobs: ScheduledJob[] = [
-    scheduleEveryXSeconds(360)('tasks', 'deliver-reminder-notifications')
-]
 
 const scheduleJobs: (allJobs: ScheduledJob[]) => Job[] =
     map(

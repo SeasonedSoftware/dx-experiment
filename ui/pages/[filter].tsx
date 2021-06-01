@@ -28,8 +28,7 @@ const croodsConfig = {
 const createTask = (text: string): Task => ({
   text,
   id: `${Math.random()}`,
-  completed: false,
-  createdAt: new Date(),
+  completed: false
 })
 
 export default function TodosPage({

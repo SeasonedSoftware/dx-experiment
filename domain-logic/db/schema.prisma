@@ -1,20 +1,17 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-datasource db {
-  provider = "postgres"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-model Task {
-  id        String  @id @default(uuid())
-  text      String
-  completed Boolean @default(value: "false")
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-  createdAt DateTime @unique @default(now())
-  // updatedAt DateTime @unique @default(now())
+model Task {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  text      String
+  completed Boolean  @default(false)
+  createdAt DateTime @unique @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@map("task")
 }

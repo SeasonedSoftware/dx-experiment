@@ -1,4 +1,4 @@
-import { Task } from 'domain-logic/resources/task'
+import { Task } from 'domain-logic'
 
 export default function Form({ addTask }: { addTask(t: Partial<Task>): void }) {
   return (

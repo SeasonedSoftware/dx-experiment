@@ -9,9 +9,7 @@ import FooterInfo from 'components/footer-info'
 import ListFooter from 'components/list-footer'
 import Form from 'components/form'
 import { useCroods, useHydrate } from 'croods'
-import { Action, findAction, onResult } from 'domain-logic'
-
-import { Task } from 'domain-logic/resources/task'
+import { Task, Action, findAction, onResult } from 'domain-logic'
 import { CroodsTuple } from 'croods/dist/types/typeDeclarations'
 
 const baseUrl = '/api/croods'

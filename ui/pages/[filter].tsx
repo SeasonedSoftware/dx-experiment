@@ -28,7 +28,7 @@ const croodsConfig = {
 const createTask = (text: string): Task => ({
   text,
   id: `${Math.random()}`,
-  completed: false
+  completed: false,
 })
 
 export default function TodosPage({
@@ -109,7 +109,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ filter: string }>,
 ) => {
-  const { action } = findAction('http')("tasks", "get") as Action
+  const { action } = findAction('http')('tasks', 'get') as Action
   const taskResult = await action(null)
   const allTasks: Task[] = onResult(
     (_errors) => [],

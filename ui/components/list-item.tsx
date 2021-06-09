@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useClickOutside } from 'lib/hooks'
-import { clsx } from 'lib/utils'
+import { cx } from 'lib/utils'
 import { Task } from 'domain-logic/resources/task'
 
 interface IProps {
@@ -35,12 +35,19 @@ export default function ListItem({ task, update, destroy }: IProps) {
   return (
     <li
       key={task.id}
-      className={clsx([editing && 'editing', completed && 'completed'])}
+      className={cx(
+        'group relative text-2xl flex ring-inset ring-red-400',
+        editing || 'focus-within:ring-1',
+        completed && 'completed',
+      )}
       ref={wrapperRef}
     >
-      <div className="view">
+      <div className={cx('flex items-center w-full', editing || 'check-bg')}>
         <input
-          className="toggle"
+          className={cx(
+            'absolute opacity-0 h-full top-0 w-12 left-0 z-20',
+            editing && 'hidden',
+          )}
           type="checkbox"
           checked={!!task.completed}
           onChange={({ currentTarget }) => {
@@ -51,6 +58,10 @@ export default function ListItem({ task, update, destroy }: IProps) {
           autoFocus={editing}
         />
         <label
+          className={cx(
+            task.completed ? 'text-gray-400 line-through' : 'text-gray-600',
+            'flex w-full pl-14 pr-2 py-4',
+          )}
           onDoubleClick={({ currentTarget }) => {
             setEditing(true)
             currentTarget.focus()
@@ -58,19 +69,31 @@ export default function ListItem({ task, update, destroy }: IProps) {
         >
           {text}
         </label>
-        <button className="destroy" onClick={() => destroy()} />
+        <button
+          className="group-hover:block absolute hidden w-8 h-8 z-20 right-4 font-mono text-red-600 text-opacity-40"
+          onClick={() => destroy()}
+        >
+          x
+        </button>
       </div>
-      <input
-        className="edit"
-        value={text}
-        onChange={({ currentTarget }) => {
-          const { value } = currentTarget
-          setText(value)
-        }}
-        onKeyPress={({ key }) => {
-          if (key === 'Enter') saveText(text)
-        }}
-      />
+      <div
+        className={cx(
+          editing ? 'block' : 'hidden',
+          'absolute inset-0 z-30 left-10 shadow-inner',
+        )}
+      >
+        <input
+          className="w-full h-full px-4 ring-1 ring-inset ring-gray-200 outline-none shadow-sm"
+          value={text}
+          onChange={({ currentTarget }) => {
+            const { value } = currentTarget
+            setText(value)
+          }}
+          onKeyPress={({ key }) => {
+            if (key === 'Enter') saveText(text)
+          }}
+        />
+      </div>
     </li>
   )
 }

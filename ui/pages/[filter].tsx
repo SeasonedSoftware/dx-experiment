@@ -3,7 +3,6 @@ import {
   GetStaticPropsContext,
   InferGetStaticPropsType,
 } from 'next'
-import Head from 'next/head'
 import identity from 'lodash/identity'
 import ListItem from 'components/list-item'
 import FooterInfo from 'components/footer-info'

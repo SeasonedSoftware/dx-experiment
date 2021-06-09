@@ -2,10 +2,9 @@ import { Task } from 'domain-logic/resources/task'
 
 export default function Form({ addTask }: { addTask(t: Partial<Task>): void }) {
   return (
-    <header className="header">
-      <h1>todos</h1>
+    <header className="relative">
       <input
-        className="new-todo"
+        className="p-4 pl-14 text-2xl w-full"
         placeholder="What needs to be done?"
         autoFocus
         onKeyDown={({ currentTarget, key }) => {
@@ -16,6 +15,16 @@ export default function Form({ addTask }: { addTask(t: Partial<Task>): void }) {
           }
         }}
       />
+      <div className="absolute w-12 flex items-center justify-center top-0 bottom-0 left-0 z-10 focus-within:ring-1 ring-red-400">
+        <input id="toggle-all" className="absolute opacity-0" type="checkbox" />
+        <label
+          className="absolte flex items-center justify-center w-full h-full text-2xl transform rotate-90 text-gray-500"
+          htmlFor="toggle-all"
+          title="Mark all as complete"
+        >
+          ❯
+        </label>
+      </div>
     </header>
   )
 }

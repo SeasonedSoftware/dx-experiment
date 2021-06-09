@@ -29,7 +29,7 @@ interface IProps {
 
 export default function FilterMenu({ filters, current }: IProps) {
   return (
-    <ul className="filters">
+    <ul className="flex gap-1 justify-center absolute inset-0 py-2">
       {filters.map((filter) => (
         <FilterLink key={filter} active={current === filter} filter={filter} />
       ))}

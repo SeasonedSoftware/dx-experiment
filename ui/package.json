@@ -27,6 +27,7 @@
     "add": "^2.0.6",
     "axios": "0.21.1",
     "croods": "^2.2.0",
+    "domain-logic": "link:../domain-logic",
     "jest": "26.6.3",
     "jest-playwright": "0.0.1",
     "jest-playwright-preset": "1.5.2",
@@ -39,15 +40,17 @@
     "todomvc-app-css": "2.4.1",
     "todomvc-common": "1.0.5",
     "yarn": "^1.22.10",
-    "zod": "^3.0.0-beta.1",
-    "domain-logic": "link:../domain-logic"
+    "zod": "^3.0.0-beta.1"
   },
   "devDependencies": {
     "@types/jest": "26.0.23",
     "@types/node": "15.0.2",
     "@types/react": "17.0.5",
+    "autoprefixer": "^10.2.6",
     "npm-run-all": "4.1.5",
+    "postcss": "^8.3.0",
     "prisma": "2.22.0",
+    "tailwindcss": "^2.1.4",
     "ts-jest": "26.5.6",
     "typescript": "4.2.4"
   },

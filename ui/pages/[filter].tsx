@@ -12,8 +12,6 @@ import Form from 'components/form'
 import { useCroods, useHydrate } from 'croods'
 import { Action, findAction, onResult } from 'domain-logic'
 
-import 'todomvc-app-css/index.css'
-import 'todomvc-common/base.css'
 import { Task } from 'domain-logic/resources/task'
 import { CroodsTuple } from 'croods/dist/types/typeDeclarations'
 
@@ -55,17 +53,12 @@ export default function TodosPage({
   }
 
   return (
-    <>
-      <Head>
-        <title>Todos</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <section className="todoapp">
+    <div className="layout">
+      <h1 className="text-center text-8xl text-red-800 font-thin">todos</h1>
+      <section className="mt-8 bg-white shadow-xl flex flex-col w-full max-w-[35rem]">
         <Form addTask={addTask} />
-        <section className="main">
-          <input id="toggle-all" className="toggle-all" type="checkbox" />
-          <label htmlFor="toggle-all">Mark all as complete</label>
-          <ul className="todo-list">
+        <section>
+          <ul className="flex flex-col divide-y shadow-inner">
             {tasks
               .filter(({ completed }) => {
                 switch (filter) {
@@ -95,7 +88,7 @@ export default function TodosPage({
         />
       </section>
       <FooterInfo />
-    </>
+    </div>
   )
 }
 

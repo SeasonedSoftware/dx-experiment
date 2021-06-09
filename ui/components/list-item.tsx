@@ -36,7 +36,7 @@ export default function ListItem({ task, update, destroy }: IProps) {
     <li
       key={task.id}
       className={cx(
-        'group relative text-2xl flex ring-inset ring-red-400',
+        'group relative text-2xl flex ring-inset ring-red-400 dark:ring-green-500',
         editing || 'focus-within:ring-1',
         completed && 'completed',
       )}
@@ -59,7 +59,9 @@ export default function ListItem({ task, update, destroy }: IProps) {
         />
         <label
           className={cx(
-            task.completed ? 'text-gray-400 line-through' : 'text-gray-600',
+            task.completed
+              ? 'text-gray-400 dark:text-gray-600 line-through'
+              : 'text-gray-600 dark:text-gray-300',
             'flex w-full pl-14 pr-2 py-4',
           )}
           onDoubleClick={({ currentTarget }) => {
@@ -70,7 +72,7 @@ export default function ListItem({ task, update, destroy }: IProps) {
           {text}
         </label>
         <button
-          className="group-hover:block absolute hidden w-8 h-8 z-20 right-4 font-mono text-red-600 text-opacity-40"
+          className="group-hover:block absolute hidden w-8 h-8 z-20 right-4 font-mono text-red-600 dark:text-green-500 dark:text-opacity-50 text-opacity-40"
           onClick={() => destroy()}
         >
           x

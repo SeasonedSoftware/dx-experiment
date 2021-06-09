@@ -53,11 +53,13 @@ export default function TodosPage({
 
   return (
     <div className="layout">
-      <h1 className="text-center text-8xl text-red-800 font-thin">todos</h1>
-      <section className="mt-8 bg-white shadow-xl flex flex-col w-full max-w-[35rem]">
+      <h1 className="text-center text-8xl text-red-800 dark:text-green-600 font-thin">
+        todos
+      </h1>
+      <section className="mt-8 bg-white dark:bg-gray-800 shadow-xl flex flex-col w-full max-w-[35rem]">
         <Form addTask={addTask} />
         <section>
-          <ul className="flex flex-col divide-y shadow-inner">
+          <ul className="flex flex-col divide-y dark:divide-gray-600 shadow-inner">
             {tasks
               .filter(({ completed }) => {
                 switch (filter) {

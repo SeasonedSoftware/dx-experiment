@@ -12,8 +12,8 @@ const FilterLink = ({ filter, active }: ILinkProps) => (
     <Link href={`/${filter}`}>
       <a
         className={cx(
-          active && 'border-red-600',
-          'p-1 px-2 rounded border hover:border-red-700 border-transparent',
+          active && 'border-red-600 dark:border-green-600',
+          'p-1 px-2 rounded border hover:border-red-700 dark:hover:border-green-500 border-transparent text-current',
         )}
       >
         {startCase(filter)}

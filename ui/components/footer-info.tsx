@@ -4,13 +4,19 @@ export default function FooterInfo() {
       <p>Double-click to edit a todo</p>
       <p>
         Created with{' '}
-        <a className="text-gray-900" href="http://seasoned.cc">
+        <a
+          className="text-gray-900 dark:text-gray-100"
+          href="http://seasoned.cc"
+        >
           Seasoned DX Framework
         </a>
       </p>
       <p>
         Part of{' '}
-        <a className="text-gray-900" href="http://todomvc.com">
+        <a
+          className="text-gray-900 dark:text-gray-100"
+          href="http://todomvc.com"
+        >
           TodoMVC
         </a>
       </p>

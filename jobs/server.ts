@@ -4,7 +4,7 @@ import fastifyPostgres from 'fastify-postgres'
 import createSubscriber from 'pg-listen'
 import { AddressInfo } from 'net'
 import { exit } from 'process'
-import { onResult, Action, findAction } from 'domain-logic'
+import { onAction, findAction } from 'domain-logic'
 import isNil from 'lodash/isNil'
 import split from 'lodash/split'
 import schedule from './schedule'
@@ -36,14 +36,11 @@ subscriber.notifications.on(channel, async (msg) => {
     console.error(`Could not find action ${requestedAction} in ${namespace}. Ensure the action transport is set to 'notification'`)
   }
   else {
-    const resolvedAction: Action = maybeRequestedAction
-    const { action } = maybeRequestedAction
-    const taskResult = await action(msg.payload)
-    return onResult(
+    return onAction(
+      maybeRequestedAction,
       (errors) => console.error({ errors }),
-      (data) => console.log({ data }),
-      taskResult,
-    )
+      (data) => console.log({ data })
+    )(msg.payload)
   }
 })
 

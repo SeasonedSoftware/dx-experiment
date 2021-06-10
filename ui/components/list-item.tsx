@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useClickOutside } from 'lib/hooks'
 import { cx } from 'lib/utils'
-import { Task } from 'domain-logic/resources/task'
+import { Task } from 'domain-logic'
 
 interface IProps {
   task: Task

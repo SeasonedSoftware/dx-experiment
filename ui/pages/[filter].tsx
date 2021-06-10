@@ -9,9 +9,7 @@ import FooterInfo from 'components/footer-info'
 import ListFooter from 'components/list-footer'
 import Form from 'components/form'
 import { useCroods, useHydrate } from 'croods'
-import { Action, findAction, onResult } from 'domain-logic'
-
-import { Task } from 'domain-logic/resources/task'
+import { Action, findAction, onAction, Task } from 'domain-logic'
 import { CroodsTuple } from 'croods/dist/types/typeDeclarations'
 
 const baseUrl = '/api/croods'
@@ -103,13 +101,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ filter: string }>,
 ) => {
-  const { action } = findAction('http')('tasks', 'get') as Action
-  const taskResult = await action(null)
-  const allTasks: Task[] = onResult(
+  const action = findAction('http')('tasks', 'get') as Action
+  const allTasks: Task[] = await onAction(
+    action,
     (_errors) => [],
-    (data) => JSON.parse(JSON.stringify(data)),
-    taskResult,
-  )
+    (data) => JSON.parse(JSON.stringify(data))
+  )()
 
   return {
     props: {

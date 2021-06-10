@@ -71,6 +71,22 @@ const findActionInDomain:
         return action && (action.transport === transport ? action : undefined)
       }
 
+const onAction:
+  (
+    action: Action,
+    onError: (r: any) => any,
+    onSuccess: (r: any) => any
+  ) => (input?: ZodTypeAny) => any =
+  ({ parser, action }, onError, onSuccess) => async (input) => {
+    const parsedInput = parser && parser.parse(input) || input
+    const taskResult = await action(parsedInput)
+    return onResult(
+      onError,
+      onSuccess,
+      taskResult,
+    )
+  }
+
 export {
   Action,
   Actions,
@@ -80,5 +96,6 @@ export {
   success,
   error,
   onResult,
+  onAction,
   findActionInDomain
 }

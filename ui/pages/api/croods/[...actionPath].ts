@@ -1,25 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Action, findAction, onResult } from 'domain-logic'
+import { Action, findAction, onAction } from 'domain-logic'
 import defaults from 'lodash/defaults'
 import isNil from 'lodash/isNil'
 
 const findHttpAction = findAction('http')
 
 const makeHandler =
-  ({ mutation, parser, action }: Action) =>
+  (action: Action) =>
     async (input: any, req: NextApiRequest, res: NextApiResponse) => {
-      if (req.method === 'GET' && mutation) {
+      if (req.method === 'GET' && action.mutation) {
         res.setHeader('Allow', 'POST, PATCH, PUT, DELETE')
         return res.status(405).end()
       }
-      const parsedInput = parser && parser.parse(input)
-      const taskResult = await action(parsedInput)
-      console.log({ taskResult })
-      return onResult(
+      onAction(action,
         (errors) => res.status(400).json(errors),
-        (data) => res.status(200).json(data),
-        taskResult,
-      )
+        (data) => res.status(200).json(data)
+      )(input)
     }
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

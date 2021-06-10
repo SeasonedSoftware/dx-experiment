@@ -101,7 +101,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ filter: string }>,
 ) => {
-  const action = findAction('http')("tasks", "get") as Action
+  const action = findAction('http')('tasks', 'get') as Action
   const allTasks: Task[] = await onAction(
     action,
     (_errors) => [],

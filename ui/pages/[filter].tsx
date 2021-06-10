@@ -3,7 +3,6 @@ import {
   GetStaticPropsContext,
   InferGetStaticPropsType,
 } from 'next'
-import Head from 'next/head'
 import identity from 'lodash/identity'
 import ListItem from 'components/list-item'
 import FooterInfo from 'components/footer-info'
@@ -12,8 +11,6 @@ import Form from 'components/form'
 import { useCroods, useHydrate } from 'croods'
 import { Action, findAction, onResult } from 'domain-logic'
 
-import 'todomvc-app-css/index.css'
-import 'todomvc-common/base.css'
 import { Task } from 'domain-logic/resources/task'
 import { CroodsTuple } from 'croods/dist/types/typeDeclarations'
 
@@ -28,7 +25,7 @@ const croodsConfig = {
 const createTask = (text: string): Task => ({
   text,
   id: `${Math.random()}`,
-  completed: false
+  completed: false,
 })
 
 export default function TodosPage({
@@ -55,17 +52,14 @@ export default function TodosPage({
   }
 
   return (
-    <>
-      <Head>
-        <title>Todos</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <section className="todoapp">
+    <div className="layout">
+      <h1 className="text-center text-8xl text-red-800 dark:text-green-600 font-thin">
+        todos
+      </h1>
+      <section className="mt-8 bg-white dark:bg-gray-800 shadow-xl flex flex-col w-full max-w-[35rem]">
         <Form addTask={addTask} />
-        <section className="main">
-          <input id="toggle-all" className="toggle-all" type="checkbox" />
-          <label htmlFor="toggle-all">Mark all as complete</label>
-          <ul className="todo-list">
+        <section>
+          <ul className="flex flex-col divide-y dark:divide-gray-600 shadow-inner">
             {tasks
               .filter(({ completed }) => {
                 switch (filter) {
@@ -95,7 +89,7 @@ export default function TodosPage({
         />
       </section>
       <FooterInfo />
-    </>
+    </div>
   )
 }
 
@@ -109,7 +103,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ filter: string }>,
 ) => {
-  const { action } = findAction('http')("tasks", "get") as Action
+  const { action } = findAction('http')('tasks', 'get') as Action
   const taskResult = await action(null)
   const allTasks: Task[] = onResult(
     (_errors) => [],

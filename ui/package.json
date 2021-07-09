@@ -7,8 +7,8 @@
     "schema": "../domain-logic/db/schema.prisma"
   },
   "scripts": {
-    "build": "prisma generate && yarn migrate && next build",
-    "dev": "yarn dx:next",
+    "build": "yarn tw --minify && prisma generate && yarn migrate && next build",
+    "dev": "yarn tw --watch & yarn dx:next",
     "dx:next": "prisma generate && next dev",
     "dx:prisma-studio": "prisma studio",
     "dx": "run-p dx:* --print-label",
@@ -17,7 +17,7 @@
     "migrate": "prisma migrate deploy --preview-feature",
     "start": "next start -p $PORT",
     "studio": "prisma studio",
-    "test": "jest"
+    "tw": "npx tailwindcss -i ./styles/global.css -o ./public/styles.css"
   },
   "dependencies": {
     "axios": "0.21.1",

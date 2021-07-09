@@ -18,7 +18,7 @@ export default function Form({ addTask }: { addTask(t: Partial<Task>): void }) {
       <div className="absolute w-12 flex items-center justify-center top-0 bottom-0 left-0 z-10 focus-within:ring-1 ring-red-400 dark:ring-green-500">
         <input id="toggle-all" className="absolute opacity-0" type="checkbox" />
         <label
-          className="absolte flex items-center justify-center w-full h-full text-2xl transform rotate-90 text-gray-500 dark:text-gray-600"
+          className="absolte flex items-center justify-center w-full h-full text-2xl rotate-90 text-gray-500 dark:text-gray-600"
           htmlFor="toggle-all"
           title="Mark all as complete"
         >

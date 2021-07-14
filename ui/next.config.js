@@ -3,7 +3,7 @@ module.exports = {
     return [
       {
         source: '/',
-        destination: '/all',
+        destination: '/tasks/all',
         permanent: false,
       },
     ]

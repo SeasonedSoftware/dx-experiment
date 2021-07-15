@@ -19,47 +19,46 @@ const { mutation: timerMutation } = makeAction.timer
 const publish = publishInNamespace('tasks')
 
 const tasks: Actions = {
-    post: mutation(
+    post: mutation(taskCreateParser)(
         async (input: z.infer<typeof taskCreateParser>) =>
-            success(await prisma.task.create({ data: input })),
-        taskCreateParser,
+            success(await prisma.task.create({ data: input }))
+
     ),
-    get: query(async () => success(await prisma.task.findMany())),
-    delete: mutation(
+    get: query()(async () => success(await prisma.task.findMany())),
+    delete: mutation(taskDeleteParser)(
         async (input: z.infer<typeof taskDeleteParser>) =>
             success(
                 await prisma.task.delete({
                     where: input,
                 }),
-            ),
-        taskDeleteParser,
+            )
+
     ),
-    put: mutation(
+    put: mutation(taskUpdateParser)(
         async (input: z.infer<typeof taskUpdateParser>) =>
             success(
                 await prisma.task.update({
                     where: { id: input.id },
                     data: input,
                 }),
-            ),
-        taskUpdateParser,
+            )
     ),
-    'send-completed-notifications': query((input: any) => {
+    'send-completed-notifications': query()(() => {
         const payload = { hello: 'world', superExpensiveOperation: true }
         console.log({ payload })
         publish('deliver-completed-notifications', payload)
         return empty()
     }),
-    'deliver-completed-notifications': notifyMutation((input: any) => {
+    'deliver-completed-notifications': notifyMutation()((input: any) => {
         console.log('deliver-completed-notifications event handler received: ', { input })
         return empty()
     }),
-    'deliver-reminder-notifications': timerMutation((input: any) => {
+    'deliver-reminder-notifications': timerMutation()((input: any) => {
         console.log('deliver-reminder-notifications event handler received: ', { input })
         return empty()
     }),
 
-    'clear-completed': mutation(async () => {
+    'clear-completed': mutation()(async () => {
         await prisma.task.deleteMany({
             where: { completed: true },
         })

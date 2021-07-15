@@ -33,7 +33,7 @@ type Action<I extends ZodTypeAny = ZodTypeAny, O = unknown> = {
 
 const allHelpers = ALL_TRANSPORTS.map((el) => (
   {
-    query: <I, O>(action: (input: I) => ActionResult<O>, parser?: ZodTypeAny) =>
+    query: <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) => (action: (input: P extends ZodTypeAny ? z.infer<P> : void) => ActionResult<O>) =>
     ({
       transport: el,
       mutation: false,
@@ -41,7 +41,7 @@ const allHelpers = ALL_TRANSPORTS.map((el) => (
       action,
     }),
 
-    mutation: <I, O>(action: (input: I) => ActionResult<O>, parser?: ZodTypeAny) =>
+    mutation: <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) => (action: (input: P extends ZodTypeAny ? z.infer<P> : void) => ActionResult<O>) =>
     ({
       transport: el,
       mutation: true,

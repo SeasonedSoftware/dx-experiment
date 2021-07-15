@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { Prisma, PrismaClient } from '@prisma/client'
-import { makeAction, publishInNamespace, Actions, success } from '../prelude'
+import { makeAction, publishInNamespace, Actions, success, empty } from '../prelude'
 
 const prisma = new PrismaClient()
 
@@ -48,15 +48,15 @@ const tasks: Actions = {
         const payload = { hello: 'world', superExpensiveOperation: true }
         console.log({ payload })
         publish('deliver-completed-notifications', payload)
-        return success(null)
+        return empty()
     }),
     'deliver-completed-notifications': notifyMutation((input: any) => {
         console.log('deliver-completed-notifications event handler received: ', { input })
-        return success(null)
+        return empty()
     }),
     'deliver-reminder-notifications': timerMutation((input: any) => {
         console.log('deliver-reminder-notifications event handler received: ', { input })
-        return success(null)
+        return empty()
     }),
 
     'clear-completed': mutation(async () => {

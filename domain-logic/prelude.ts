@@ -1,4 +1,4 @@
-import { ZodTypeAny } from 'zod'
+import { z, ZodTypeAny } from 'zod'
 import { PrismaClient } from '@prisma/client'
 import zipObject from 'lodash/zipObject'
 import { makePrismaPublisher } from './publisher'
@@ -9,54 +9,51 @@ const databasePublihserChannel: string = process.env.CHANNEL ?? 'database-publis
 const publishInNamespace = makePrismaPublisher(prisma, databasePublihserChannel)
 
 type Errors = Record<string, string>
-type Result = { success: true; data: any } | { success: false; errors: Errors }
+type Result<T> = { kind: 'empty' } | { kind: 'success'; data: T } | { kind: 'error'; errors: Errors }
 
-type ActionResult = Result | Promise<Result>
+type ActionResult<T> = Result<T> | Promise<Result<T>>
 
-const onResult = (
-  onError: (r: any) => any,
-  onSuccess: (r: any) => any,
-  r: Result,
-) =>
-  r.success ? onSuccess(r.data) : onError(r.errors)
+const success: <T>(r: T) => Result<T> =
+  (r) => ({ kind: 'success', data: r })
 
-const success = (r: any) => ({ success: true, data: r } as Result)
-const error = (r: Errors) => ({ success: false, errors: r } as Result)
+const empty: <T>() => Result<T> =
+  () => ({ kind: 'empty' })
+
+const error = (r: Errors) => ({ kind: 'error', errors: r })
 
 const ALL_TRANSPORTS = ['http', 'websocket', 'terminal', 'notification', 'timer'] as const
 type Transport = typeof ALL_TRANSPORTS[number]
 
-type Action = {
+type Action<I extends ZodTypeAny = ZodTypeAny, O = unknown> = {
   transport: Transport
   mutation: boolean
-  parser?: ZodTypeAny
-  action: (input: any) => ActionResult
+  parser?: I
+  action: (input: z.infer<I>) => ActionResult<O>
 }
-
-type Actions = Record<string, Action>
 
 const allHelpers = ALL_TRANSPORTS.map((el) => (
   {
-    query: (action: (input: any) => ActionResult, parser?: ZodTypeAny) =>
+    query: <I, O>(action: (input: I) => ActionResult<O>, parser?: ZodTypeAny) =>
     ({
       transport: el,
       mutation: false,
       parser,
       action,
-    } as Action),
+    }),
 
-    mutation: (action: (input: any) => ActionResult, parser?: ZodTypeAny) =>
+    mutation: <I, O>(action: (input: I) => ActionResult<O>, parser?: ZodTypeAny) =>
     ({
       transport: el,
       mutation: true,
       parser,
       action,
-    } as Action)
+    })
   }
 ))
 
 const makeAction = zipObject(ALL_TRANSPORTS, allHelpers)
 
+type Actions = Record<string, Action>
 type DomainActions = Record<string, Actions>
 
 const findActionInDomain:
@@ -72,19 +69,22 @@ const findActionInDomain:
       }
 
 const onAction:
-  (
-    action: Action,
-    onError: (r: any) => any,
+  <T extends Action>(
+    action: T,
+    onError: (r: Errors) => any,
     onSuccess: (r: any) => any
   ) => (input?: ZodTypeAny) => any =
   ({ parser, action }, onError, onSuccess) => async (input) => {
     const parsedInput = parser && parser.parse(input) || input
     const taskResult = await action(parsedInput)
-    return onResult(
-      onError,
-      onSuccess,
-      taskResult,
-    )
+    switch (taskResult.kind) {
+      case 'success':
+        return onSuccess(taskResult.data)
+      case 'empty':
+        return onSuccess(null)
+      case 'error':
+        return onError(taskResult.errors)
+    }
   }
 
 export {
@@ -94,8 +94,8 @@ export {
   makeAction,
   publishInNamespace,
   success,
+  empty,
   error,
-  onResult,
   onAction,
   findActionInDomain
 }

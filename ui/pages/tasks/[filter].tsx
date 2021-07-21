@@ -10,6 +10,7 @@ import ListFooter from 'components/list-footer'
 import Form from 'components/form'
 import { useCroods, useHydrate } from 'croods'
 import { Action, findAction, onAction, Task } from 'domain-logic'
+import { tasks } from 'domain-logic/tasks'
 
 const baseUrl = '/api/croods'
 const FILTERS = ['all', 'active', 'completed']
@@ -25,7 +26,7 @@ export default function TodosPage({
   allTasks,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   useHydrate({ name: 'tasks', value: allTasks })
-  const [{ list: tasks }, { save, destroy, fetch: fetchTasks }] = useCroods<Task>({
+  const [{ list: taskList }, { save, destroy, fetch: fetchTasks }] = useCroods<Task>({
     baseUrl: baseUrl as any,
     debugActions: true,
     debugRequests: true,
@@ -39,6 +40,7 @@ export default function TodosPage({
   }
 
   const clearCompleted = async () => {
+    // await tasks['clear-completed'].execute() 
     await fetch(`${baseUrl}/tasks/clear-completed`, { method: 'POST' })
     fetchTasks({})()
   }
@@ -52,7 +54,7 @@ export default function TodosPage({
         <Form addTask={addTask} />
         <section>
           <ul className="flex flex-col divide-y dark:divide-gray-600 shadow-inner">
-            {tasks
+            {taskList
               .filter(({ completed }) => {
                 switch (filter) {
                   case 'active':
@@ -76,7 +78,7 @@ export default function TodosPage({
         <ListFooter
           filters={FILTERS}
           current={filter}
-          tasks={tasks}
+          tasks={taskList}
           clearAll={clearCompleted}
         />
       </section>

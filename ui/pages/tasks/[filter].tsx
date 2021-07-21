@@ -10,16 +10,10 @@ import ListFooter from 'components/list-footer'
 import Form from 'components/form'
 import { useCroods, useHydrate } from 'croods'
 import { Action, findAction, onAction, Task } from 'domain-logic'
-import { CroodsTuple } from 'croods/dist/types/typeDeclarations'
 
 const baseUrl = '/api/croods'
 const FILTERS = ['all', 'active', 'completed']
-const croodsConfig = {
-  baseUrl,
-  debugActions: true,
-  debugRequests: true,
-  parseParams: identity,
-}
+
 const createTask = (text: string): Task => ({
   text,
   id: `${Math.random()}`,
@@ -31,12 +25,12 @@ export default function TodosPage({
   allTasks,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   useHydrate({ name: 'tasks', value: allTasks })
-  const [{ list: tasks }, { save, destroy, fetch: fetchTasks }]: [
-    { list: Task[] },
-    CroodsTuple[1],
-  ] = useCroods({
-    ...croodsConfig,
-    name: 'tasks',
+  const [{ list: tasks }, { save, destroy, fetch: fetchTasks }] = useCroods<Task>({
+    baseUrl: baseUrl as any,
+    debugActions: true,
+    debugRequests: true,
+    parseParams: identity,
+    name: 'tasks'
   })
 
   const addTask = ({ text }: { text: string }) => {

@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "axios": "0.21.1",
-    "croods": "^3.0.0",
+    "croods": "^3.1.0",
     "domain-logic": "link:../domain-logic",
     "next": "11.0.1",
     "react": "17.0.2",

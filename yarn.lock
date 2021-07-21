@@ -1449,10 +1449,10 @@ cron-parser@^3.1.0:
     is-nan "^1.3.2"
     luxon "^1.26.0"
 
-croods@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/croods/-/croods-3.0.0.tgz#d8bbd73b48ec1e39627b592d50f6623782b5873e"
-  integrity sha512-CBOcOf9gPMSmFTg4OnBx7o/miVCLCxpletHK29nBOTL8wBRbCdM3yHOiPO5K0xgcnLhfgUDny944VOS/xMft5A==
+croods@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/croods/-/croods-3.1.0.tgz#12052fe3857e8d72bea485b39557da81a38eb1ce"
+  integrity sha512-9Wm+VY7U1APoUdCorKQfGo4sHA1TjRpBWIrXRq43I6/oHg+v8Tz/JCRwsIurrkXKDsyIEHPxqi/VXZ53af+X8g==
   dependencies:
     "@babel/runtime" "^7.14.6"
     lodash-humps "^3.1.6"

@@ -28,25 +28,25 @@ type Action<I extends ZodTypeAny = ZodTypeAny, O = unknown> = {
   transport: Transport
   mutation: boolean
   parser?: I
-  action: (input: z.infer<I>) => ActionResult<O>
+  execute: (input: z.infer<I>) => ActionResult<O>
 }
 
 const allHelpers = ALL_TRANSPORTS.map((el) => (
   {
-    query: <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) => (action: (input: P extends ZodTypeAny ? z.infer<P> : void) => ActionResult<O>) =>
+    query: <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) => (execute: (input: P extends ZodTypeAny ? z.infer<P> : void) => ActionResult<O>) =>
     ({
       transport: el,
       mutation: false,
       parser,
-      action,
+      execute,
     }),
 
-    mutation: <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) => (action: (input: P extends ZodTypeAny ? z.infer<P> : void) => ActionResult<O>) =>
+    mutation: <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) => (execute: (input: P extends ZodTypeAny ? z.infer<P> : void) => ActionResult<O>) =>
     ({
       transport: el,
       mutation: true,
       parser,
-      action,
+      execute,
     })
   }
 ))
@@ -74,9 +74,9 @@ const onAction:
     onError: (r: Errors) => any,
     onSuccess: (r: any) => any
   ) => (input?: ZodTypeAny) => any =
-  ({ parser, action }, onError, onSuccess) => async (input) => {
+  ({ parser, execute }, onError, onSuccess) => async (input) => {
     const parsedInput = parser && parser.parse(input) || input
-    const taskResult = await action(parsedInput)
+    const taskResult = await execute(parsedInput)
     switch (taskResult.kind) {
       case 'success':
         return onSuccess(taskResult.data)

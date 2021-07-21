@@ -15,7 +15,9 @@
     "migrate": "prisma migrate deploy --preview-feature",
     "studio": "prisma studio"
   },
-  "dependencies": {},
+  "dependencies": {
+    "isomorphic-unfetch": "^3.1.0"
+  },
   "devDependencies": {
     "typescript": "4.3.5"
   },

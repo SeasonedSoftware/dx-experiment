@@ -83,7 +83,7 @@ const scheduleEveryXSeconds = compose(scheduleAction, everyXSeconds)
 const scheduleJobs: (allJobs: ScheduledJob[]) => Job[] =
     map(
         (s) => {
-            const j = scheduleJob(s.name, scheduleToString(s.schedule), s.action.execute)
+            const j = scheduleJob(s.name, scheduleToString(s.schedule), s.action._run)
             console.log(s.name, j)
             return j
         }

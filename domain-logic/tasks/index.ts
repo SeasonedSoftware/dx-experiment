@@ -7,6 +7,7 @@ import {
   success,
   empty,
 } from "../prelude";
+import { mapValues } from "lodash/fp";
 
 const prisma = new PrismaClient();
 
@@ -24,7 +25,16 @@ const { mutation: timerMutation } = makeAction.timer;
 
 const publish = publishInNamespace("tasks");
 
-const tasks = {
+type NamedRecord = Record<string, { name: string | null }>;
+
+const exportDomain: <T extends NamedRecord>(d: T) => T = (d) => {
+  Object.keys(d).forEach((k) => {
+    d[k].name = k;
+  });
+  return d;
+};
+
+const tasks = exportDomain({
   post: mutation(taskCreateParser)(
     async (input: z.infer<typeof taskCreateParser>) =>
       success(await prisma.task.create({ data: input }))
@@ -72,7 +82,9 @@ const tasks = {
     });
     return success(prisma.task.findMany());
   }),
-};
+});
+
+// tasks.post.execute()
 
 type Task = Prisma.TaskCreateInput;
 

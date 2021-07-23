@@ -1,8 +1,8 @@
-import { DomainActions, Action, findActionInDomain, onAction } from "./prelude";
-import { Task, tasks } from "./tasks";
+import { Action, findActionInDomain, onAction } from './prelude'
+import { Task, tasks } from './tasks'
 
-const rules = { tasks };
+const rules = { tasks }
 
-const findAction = findActionInDomain(rules);
+const findAction = findActionInDomain(rules)
 
-export { Action, Task, findAction, onAction };
+export { Action, Task, findAction, onAction }

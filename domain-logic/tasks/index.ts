@@ -1,91 +1,72 @@
-import { z } from "zod";
-import { Prisma, PrismaClient } from "@prisma/client";
-import {
-  makeAction,
-  publishInNamespace,
-  Actions,
-  success,
-  empty,
-} from "../prelude";
-import { mapValues } from "lodash/fp";
+import { z } from 'zod'
+import { Prisma, PrismaClient } from '@prisma/client'
+import { makeAction, publishInNamespace, success, empty } from '../prelude'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
-const taskCreateParser = z.object({ text: z.string() });
-const taskDeleteParser = z.object({ id: z.string() });
+const taskCreateParser = z.object({ text: z.string() })
+const taskDeleteParser = z.object({ id: z.string() })
 const taskUpdateParser = z.object({
   id: z.string(),
   text: z.string().optional(),
   completed: z.boolean().optional(),
-});
+})
 
-const { query, mutation } = makeAction.http;
-const { mutation: notifyMutation } = makeAction.notification;
-const { mutation: timerMutation } = makeAction.timer;
+const { query, mutation } = makeAction('tasks').http
+const { mutation: notifyMutation } = makeAction('tasks').notification
+const { mutation: timerMutation } = makeAction('tasks').timer
 
-const publish = publishInNamespace("tasks");
+const publish = publishInNamespace('tasks')
 
-type NamedRecord = Record<string, { name: string | null }>;
-
-const exportDomain: <T extends NamedRecord>(d: T) => T = (d) => {
-  Object.keys(d).forEach((k) => {
-    d[k].name = k;
-  });
-  return d;
-};
+type NamedRecord = Record<string, { name: string | null }>
+const exportDomain = <T extends NamedRecord>(domain: T): T => {
+  Object.keys(domain).forEach((k) => {
+    domain[k].name = k
+  })
+  return domain
+}
 
 const tasks = exportDomain({
   post: mutation(taskCreateParser)(
     async (input: z.infer<typeof taskCreateParser>) =>
-      success(await prisma.task.create({ data: input }))
+      success(await prisma.task.create({ data: input })),
   ),
   get: query()(async () => success(await prisma.task.findMany())),
   delete: mutation(taskDeleteParser)(
     async (input: z.infer<typeof taskDeleteParser>) =>
-      success(
-        await prisma.task.delete({
-          where: input,
-        })
-      )
+      success(await prisma.task.delete({ where: input })),
   ),
   put: mutation(taskUpdateParser)(
     async (input: z.infer<typeof taskUpdateParser>) =>
       success(
-        await prisma.task.update({
-          where: { id: input.id },
-          data: input,
-        })
-      )
+        await prisma.task.update({ where: { id: input.id }, data: input }),
+      ),
   ),
-  "send-completed-notifications": query()(() => {
-    const payload = { hello: "world", superExpensiveOperation: true };
-    console.log({ payload });
-    publish("deliver-completed-notifications", payload);
-    return empty();
+  'send-completed-notifications': query()(() => {
+    const payload = { hello: 'world', superExpensiveOperation: true }
+    publish('deliver-completed-notifications', payload)
+    return empty()
   }),
-  "deliver-completed-notifications": notifyMutation()((input: any) => {
-    console.log("deliver-completed-notifications event handler received: ", {
+  'deliver-completed-notifications': notifyMutation()((input: any) => {
+    console.log('deliver-completed-notifications event handler received: ', {
       input,
-    });
-    return empty();
+    })
+    return empty()
   }),
-  "deliver-reminder-notifications": timerMutation()((input: any) => {
-    console.log("deliver-reminder-notifications event handler received: ", {
+  'deliver-reminder-notifications': timerMutation()((input: any) => {
+    console.log('deliver-reminder-notifications event handler received: ', {
       input,
-    });
-    return empty();
+    })
+    return empty()
   }),
-
-  "clear-completed": mutation()(async () => {
+  'clear-completed': mutation()(async () => {
     await prisma.task.deleteMany({
       where: { completed: true },
-    });
-    return success(prisma.task.findMany());
+    })
+    return success(prisma.task.findMany())
   }),
-});
+})
 
-// tasks.post.execute()
+type Task = Prisma.TaskCreateInput
 
-type Task = Prisma.TaskCreateInput;
-
-export { Task, tasks };
+export { Task, tasks }

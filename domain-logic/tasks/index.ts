@@ -1,72 +1,62 @@
 import { z } from 'zod'
 import { Prisma, PrismaClient } from '@prisma/client'
-import { makeAction, publishInNamespace, Actions, success } from '../prelude'
+import { makeAction, publishInNamespace, exportDomain } from '../prelude'
 
 const prisma = new PrismaClient()
 
 const taskCreateParser = z.object({ text: z.string() })
 const taskDeleteParser = z.object({ id: z.string() })
 const taskUpdateParser = z.object({
-    id: z.string(),
-    text: z.string().optional(),
-    completed: z.boolean().optional(),
+  id: z.string(),
+  text: z.string().optional(),
+  completed: z.boolean().optional(),
 })
 
-const { query, mutation } = makeAction.http
-const { mutation: notifyMutation } = makeAction.notification
-const { mutation: timerMutation } = makeAction.timer
+const { query, mutation } = makeAction('tasks').http
+const { mutation: notifyMutation } = makeAction('tasks').notification
+const { mutation: timerMutation } = makeAction('tasks').timer
 
 const publish = publishInNamespace('tasks')
 
-const tasks: Actions = {
-    post: mutation(
-        async (input: z.infer<typeof taskCreateParser>) =>
-            success(await prisma.task.create({ data: input })),
-        taskCreateParser,
-    ),
-    get: query(async () => success(await prisma.task.findMany())),
-    delete: mutation(
-        async (input: z.infer<typeof taskDeleteParser>) =>
-            success(
-                await prisma.task.delete({
-                    where: input,
-                }),
-            ),
-        taskDeleteParser,
-    ),
-    put: mutation(
-        async (input: z.infer<typeof taskUpdateParser>) =>
-            success(
-                await prisma.task.update({
-                    where: { id: input.id },
-                    data: input,
-                }),
-            ),
-        taskUpdateParser,
-    ),
-    'send-completed-notifications': query((input: any) => {
-        const payload = { hello: 'world', superExpensiveOperation: true }
-        console.log({ payload })
-        publish('deliver-completed-notifications', payload)
-        return success(null)
-    }),
-    'deliver-completed-notifications': notifyMutation((input: any) => {
-        console.log('deliver-completed-notifications event handler received: ', { input })
-        return success(null)
-    }),
-    'deliver-reminder-notifications': timerMutation((input: any) => {
-        console.log('deliver-reminder-notifications event handler received: ', { input })
-        return success(null)
-    }),
-
-    'clear-completed': mutation(async () => {
-        await prisma.task.deleteMany({
-            where: { completed: true },
-        })
-        return success(prisma.task.findMany())
-    }),
-}
+const tasks = exportDomain({
+  post: mutation<Task, typeof taskCreateParser>(taskCreateParser)(
+    async (input) => prisma.task.create({ data: input }),
+  ),
+  get: query<Task[]>()(async () => prisma.task.findMany()),
+  delete: mutation<Task, typeof taskDeleteParser>(taskDeleteParser)(
+    async (input) => prisma.task.delete({ where: input }),
+  ),
+  put: mutation<Task, typeof taskUpdateParser>(taskUpdateParser)(
+    async (input) =>
+      prisma.task.update({ where: { id: input.id }, data: input }),
+  ),
+  'send-completed-notifications': query<void>()(async () => {
+    const payload = { hello: 'world', superExpensiveOperation: true }
+    publish('deliver-completed-notifications', payload)
+  }),
+  'deliver-completed-notifications': notifyMutation<void>()(
+    async (input: any) => {
+      console.log('deliver-completed-notifications event handler received: ', {
+        input,
+      })
+    },
+  ),
+  'deliver-reminder-notifications': timerMutation<void>()(
+    async (input: any) => {
+      console.log('deliver-reminder-notifications event handler received: ', {
+        input,
+      })
+    },
+  ),
+  'clear-completed': mutation<Task[]>()(async () => {
+    await prisma.task.deleteMany({
+      where: { completed: true },
+    })
+    return prisma.task.findMany()
+  }),
+})
 
 type Task = Prisma.TaskCreateInput
 
-export { Task, tasks }
+export { tasks }
+export type { Task }

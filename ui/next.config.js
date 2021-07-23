@@ -1,4 +1,6 @@
-module.exports = {
+const withTM = require('next-transpile-modules')(['domain-logic', 'jobs'])
+
+module.exports = withTM({
   async redirects() {
     return [
       {
@@ -8,4 +10,4 @@ module.exports = {
       },
     ]
   },
-}
+})

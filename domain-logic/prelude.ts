@@ -1,101 +1,101 @@
-import { ZodTypeAny } from 'zod'
+import { z, ZodTypeAny } from 'zod'
 import { PrismaClient } from '@prisma/client'
 import zipObject from 'lodash/zipObject'
 import { makePrismaPublisher } from './publisher'
 
 const prisma = new PrismaClient()
-const databasePublihserChannel: string = process.env.CHANNEL ?? 'database-publisher-channel'
+const databasePublihserChannel: string =
+  process.env.CHANNEL ?? 'database-publisher-channel'
 
 const publishInNamespace = makePrismaPublisher(prisma, databasePublihserChannel)
 
-type Errors = Record<string, string>
-type Result = { success: true; data: any } | { success: false; errors: Errors }
-
-type ActionResult = Result | Promise<Result>
-
-const onResult = (
-  onError: (r: any) => any,
-  onSuccess: (r: any) => any,
-  r: Result,
-) =>
-  r.success ? onSuccess(r.data) : onError(r.errors)
-
-const success = (r: any) => ({ success: true, data: r } as Result)
-const error = (r: Errors) => ({ success: false, errors: r } as Result)
-
-const ALL_TRANSPORTS = ['http', 'websocket', 'terminal', 'notification', 'timer'] as const
+const ALL_TRANSPORTS = [
+  'http',
+  'websocket',
+  'terminal',
+  'notification',
+  'timer',
+] as const
 type Transport = typeof ALL_TRANSPORTS[number]
 
-type Action = {
+type Action<I extends ZodTypeAny = ZodTypeAny, O = unknown> = {
   transport: Transport
   mutation: boolean
-  parser?: ZodTypeAny
-  action: (input: any) => ActionResult
+  parser?: I
+  run: (input: z.infer<I>) => Promise<O>
+  name: string | null
 }
+
+const allHelpers = (namespace: string) =>
+  ALL_TRANSPORTS.map((el) => ({
+    query:
+      <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) =>
+      (
+        run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>,
+      ) => ({
+        transport: el,
+        mutation: false,
+        parser,
+        run,
+        name: null,
+      }),
+
+    mutation:
+      <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) =>
+      (
+        run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>,
+      ) => ({
+        transport: el,
+        mutation: true,
+        parser,
+        run,
+        name: null,
+      }),
+  }))
+
+const makeAction = (namespace: string) =>
+  zipObject(ALL_TRANSPORTS, allHelpers(namespace))
 
 type Actions = Record<string, Action>
-
-const allHelpers = ALL_TRANSPORTS.map((el) => (
-  {
-    query: (action: (input: any) => ActionResult, parser?: ZodTypeAny) =>
-    ({
-      transport: el,
-      mutation: false,
-      parser,
-      action,
-    } as Action),
-
-    mutation: (action: (input: any) => ActionResult, parser?: ZodTypeAny) =>
-    ({
-      transport: el,
-      mutation: true,
-      parser,
-      action,
-    } as Action)
-  }
-))
-
-const makeAction = zipObject(ALL_TRANSPORTS, allHelpers)
-
 type DomainActions = Record<string, Actions>
 
-const findActionInDomain:
+const findActionInDomain =
   (rules: DomainActions) =>
-    (transport: Transport) =>
-      (namespace: string, actionName: string) =>
-        Action | undefined =
-  (rules) =>
-    (transport) =>
-      (namespace, actionName) => {
-        const action = rules[namespace]?.[actionName]
-        return action && (action.transport === transport ? action : undefined)
-      }
-
-const onAction:
-  (
-    action: Action,
-    onError: (r: any) => any,
-    onSuccess: (r: any) => any
-  ) => (input?: ZodTypeAny) => any =
-  ({ parser, action }, onError, onSuccess) => async (input) => {
-    const parsedInput = parser && parser.parse(input) || input
-    const taskResult = await action(parsedInput)
-    return onResult(
-      onError,
-      onSuccess,
-      taskResult,
-    )
+  (transport: Transport) =>
+  (namespace: string, actionName: string): Action | undefined => {
+    const action = rules[namespace]?.[actionName]
+    return action && (action.transport === transport ? action : undefined)
   }
 
-export {
-  Action,
-  Actions,
-  DomainActions,
-  makeAction,
-  publishInNamespace,
-  success,
-  error,
-  onResult,
-  onAction,
-  findActionInDomain
+const onAction =
+  <T extends Action>(
+    { parser, run }: T,
+    onError: (r: any) => any,
+    onSuccess: (r: any) => any,
+  ) =>
+  async (input?: ZodTypeAny): Promise<any> => {
+    try {
+      const parsedInput = parser?.parse(input) ?? input
+      const result = await run(parsedInput)
+      return onSuccess(result)
+    } catch (err: unknown) {
+      return onError(err)
+    }
+  }
+
+type NamedRecord = Record<string, { name: string | null }>
+const exportDomain = <T extends NamedRecord>(domain: T): T => {
+  Object.keys(domain).forEach((k) => {
+    domain[k].name = k
+  })
+  return domain
 }
+
+export {
+  exportDomain,
+  findActionInDomain,
+  makeAction,
+  onAction,
+  publishInNamespace,
+}
+export type { Action }

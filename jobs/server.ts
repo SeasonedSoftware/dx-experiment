@@ -10,13 +10,13 @@ import split from 'lodash/split'
 import schedule from './schedule'
 
 if (process.env.CHANNEL === undefined) {
-  console.error("Please provide a value for CHANNEL environment variable")
+  console.error('Please provide a value for CHANNEL environment variable')
   console.log({ DATABASE_URL: process.env.CHANNEL })
   exit(1)
 }
 
 if (process.env.DATABASE_URL === undefined) {
-  console.error("Please provide a value for DATABASE_URL environment variable")
+  console.error('Please provide a value for DATABASE_URL environment variable')
   console.log({ DATABASE_URL: process.env.DATABASE_URL })
   exit(1)
 }
@@ -31,15 +31,19 @@ subscriber.notifications.on(channel, async (msg) => {
   // Payload as passed to subscriber.notify() (see below)
   console.log(`Received notification in '${channel}':`, msg)
   const [requestedAction, namespace] = split(msg.channel, '@')
-  const maybeRequestedAction = findAction('notification')(namespace, requestedAction)
+  const maybeRequestedAction = findAction('notification')(
+    namespace,
+    requestedAction,
+  )
   if (isNil(maybeRequestedAction)) {
-    console.error(`Could not find action ${requestedAction} in ${namespace}. Ensure the action transport is set to 'notification'`)
-  }
-  else {
+    console.error(
+      `Could not find action ${requestedAction} in ${namespace}. Ensure the action transport is set to 'notification'`,
+    )
+  } else {
     return onAction(
       maybeRequestedAction,
       (errors) => console.error({ errors }),
-      (data) => console.log({ data })
+      (data) => console.log({ data }),
     )(msg.payload)
   }
 })

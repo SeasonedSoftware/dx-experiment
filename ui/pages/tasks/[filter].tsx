@@ -3,47 +3,27 @@ import {
   GetStaticPropsContext,
   InferGetStaticPropsType,
 } from 'next'
-import identity from 'lodash/identity'
 import ListItem from 'components/list-item'
 import FooterInfo from 'components/footer-info'
 import ListFooter from 'components/list-footer'
 import Form from 'components/form'
-import { useCroods, useHydrate } from 'croods'
-import { Action, findAction, onAction, Task } from 'domain-logic'
-import { tasks } from 'domain-logic/tasks'
+import { Task, tasks } from 'domain-logic/tasks'
 
-const baseUrl = '/api/croods'
 const FILTERS = ['all', 'active', 'completed']
-
-const createTask = (text: string): Task => ({
-  text,
-  id: `${Math.random()}`,
-  completed: false,
-})
 
 export default function TodosPage({
   filter,
   allTasks,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  useHydrate({ name: 'tasks', value: allTasks })
-  const [{ list: taskList }, { save, destroy, fetch: fetchTasks }] = useCroods<Task>({
-    baseUrl: baseUrl as any,
-    debugActions: true,
-    debugRequests: true,
-    parseParams: identity,
-    name: 'tasks'
-  })
-
-  const addTask = ({ text }: { text: string }) => {
-    const newTask = createTask(text)
-    save({})(newTask)
+  const addTask = (payload: { text: string }) => {
+    fetch('/api/croods/tasks/post', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
   }
 
-  const clearCompleted = async () => {
-    // await tasks['clear-completed'].execute() 
-    await fetch(`${baseUrl}/tasks/clear-completed`, { method: 'POST' })
-    fetchTasks({})()
-  }
+  const clearCompleted = () =>
+    fetch('/api/croods/tasks/clear-completed', { method: 'POST' })
 
   return (
     <div className="layout">
@@ -54,7 +34,7 @@ export default function TodosPage({
         <Form addTask={addTask} />
         <section>
           <ul className="flex flex-col divide-y dark:divide-gray-600 shadow-inner">
-            {taskList
+            {allTasks
               .filter(({ completed }) => {
                 switch (filter) {
                   case 'active':
@@ -69,8 +49,18 @@ export default function TodosPage({
                 <ListItem
                   key={`task-${idx}`}
                   task={task}
-                  update={save({ id: task.id })}
-                  destroy={destroy({ id: task.id })}
+                  update={({ text, completed }: Partial<Task>) =>
+                    fetch('/api/croods/tasks/put', {
+                      method: 'POST',
+                      body: JSON.stringify({ id: task.id, text, completed }),
+                    })
+                  }
+                  destroy={() =>
+                    fetch('/api/croods/tasks/delete', {
+                      method: 'POST',
+                      body: JSON.stringify({ id: task.id }),
+                    })
+                  }
                 />
               ))}
           </ul>
@@ -78,7 +68,7 @@ export default function TodosPage({
         <ListFooter
           filters={FILTERS}
           current={filter}
-          tasks={taskList}
+          tasks={allTasks}
           clearAll={clearCompleted}
         />
       </section>
@@ -97,17 +87,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ filter: string }>,
 ) => {
-  const action = findAction('http')('tasks', 'get') as Action
-  const allTasks: Task[] = await onAction(
-    action,
-    (_errors) => [],
-    (data) => JSON.parse(JSON.stringify(data))
-  )()
+  const allTasks = await tasks.get.run()
 
   return {
     props: {
-      filter: context.params?.filter ?? 'all',
       allTasks,
+      filter: context.params?.filter ?? 'all',
     },
     revalidate: 1,
   }

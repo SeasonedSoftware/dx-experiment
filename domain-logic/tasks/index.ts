@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { Prisma, PrismaClient } from '@prisma/client'
-import { makeAction, publishInNamespace, success, empty } from '../prelude'
+import { makeAction, publishInNamespace, exportDomain } from '../prelude'
 
 const prisma = new PrismaClient()
 
@@ -18,55 +18,45 @@ const { mutation: timerMutation } = makeAction('tasks').timer
 
 const publish = publishInNamespace('tasks')
 
-type NamedRecord = Record<string, { name: string | null }>
-const exportDomain = <T extends NamedRecord>(domain: T): T => {
-  Object.keys(domain).forEach((k) => {
-    domain[k].name = k
-  })
-  return domain
-}
-
 const tasks = exportDomain({
-  post: mutation(taskCreateParser)(
-    async (input: z.infer<typeof taskCreateParser>) =>
-      success(await prisma.task.create({ data: input })),
+  post: mutation<Task, typeof taskCreateParser>(taskCreateParser)(
+    async (input) => prisma.task.create({ data: input }),
   ),
-  get: query()(async () => success(await prisma.task.findMany())),
-  delete: mutation(taskDeleteParser)(
-    async (input: z.infer<typeof taskDeleteParser>) =>
-      success(await prisma.task.delete({ where: input })),
+  get: query<Task[]>()(async () => prisma.task.findMany()),
+  delete: mutation<Task, typeof taskDeleteParser>(taskDeleteParser)(
+    async (input) => prisma.task.delete({ where: input }),
   ),
-  put: mutation(taskUpdateParser)(
-    async (input: z.infer<typeof taskUpdateParser>) =>
-      success(
-        await prisma.task.update({ where: { id: input.id }, data: input }),
-      ),
+  put: mutation<Task, typeof taskUpdateParser>(taskUpdateParser)(
+    async (input) =>
+      prisma.task.update({ where: { id: input.id }, data: input }),
   ),
-  'send-completed-notifications': query()(() => {
+  'send-completed-notifications': query<void>()(async () => {
     const payload = { hello: 'world', superExpensiveOperation: true }
     publish('deliver-completed-notifications', payload)
-    return empty()
   }),
-  'deliver-completed-notifications': notifyMutation()((input: any) => {
-    console.log('deliver-completed-notifications event handler received: ', {
-      input,
-    })
-    return empty()
-  }),
-  'deliver-reminder-notifications': timerMutation()((input: any) => {
-    console.log('deliver-reminder-notifications event handler received: ', {
-      input,
-    })
-    return empty()
-  }),
-  'clear-completed': mutation()(async () => {
+  'deliver-completed-notifications': notifyMutation<void>()(
+    async (input: any) => {
+      console.log('deliver-completed-notifications event handler received: ', {
+        input,
+      })
+    },
+  ),
+  'deliver-reminder-notifications': timerMutation<void>()(
+    async (input: any) => {
+      console.log('deliver-reminder-notifications event handler received: ', {
+        input,
+      })
+    },
+  ),
+  'clear-completed': mutation<Task[]>()(async () => {
     await prisma.task.deleteMany({
       where: { completed: true },
     })
-    return success(prisma.task.findMany())
+    return prisma.task.findMany()
   }),
 })
 
 type Task = Prisma.TaskCreateInput
 
-export { Task, tasks }
+export { tasks }
+export type { Task }

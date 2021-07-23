@@ -1,22 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Action, findAction, onAction } from 'domain-logic'
-import defaults from 'lodash/defaults'
 import isNil from 'lodash/isNil'
 
 const findHttpAction = findAction('http')
 
 const makeHandler =
   (action: Action) =>
-    async (input: any, req: NextApiRequest, res: NextApiResponse) => {
-      if (req.method === 'GET' && action.mutation) {
-        res.setHeader('Allow', 'POST, PATCH, PUT, DELETE')
-        return res.status(405).end()
-      }
-      onAction(action,
-        (errors) => res.status(400).json(errors),
-        (data) => res.status(200).json(data)
-      )(input)
+  async (input: any, req: NextApiRequest, res: NextApiResponse) => {
+    if (req.method === 'GET' && action.mutation) {
+      res.setHeader('Allow', 'POST, PATCH, PUT, DELETE')
+      return res.status(405).end()
     }
+    return onAction(
+      action,
+      (errors) => res.status(500).json({ errors, input }),
+      (data) => res.status(200).json(data),
+    )(input)
+  }
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const [namespace, requestedAction] = req.query.actionPath as string[]
@@ -31,7 +31,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const id =
       isNil(maybeRequestedAction) && requestedAction ? requestedAction : null
 
-    let params = { id }
     console.log({
       resolvedAction,
       namespace,
@@ -39,6 +38,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       method: req.method!.toLowerCase(),
       id,
     })
-    return makeHandler(resolvedAction)(defaults(params, req.body), req, res)
+
+    const body = req.body ? JSON.parse(req.body) : undefined
+    return makeHandler(resolvedAction)(body, req, res)
   }
 }

@@ -1,13 +1,5 @@
 import { z, ZodTypeAny } from 'zod'
-import { PrismaClient } from '@prisma/client'
 import zipObject from 'lodash/zipObject'
-import { makePrismaPublisher } from './publisher'
-
-const prisma = new PrismaClient()
-const databasePublihserChannel: string =
-  process.env.CHANNEL ?? 'database-publisher-channel'
-
-const publishInNamespace = makePrismaPublisher(prisma, databasePublihserChannel)
 
 const ALL_TRANSPORTS = [
   'http',
@@ -31,7 +23,7 @@ const allHelpers = (namespace: string) =>
     query:
       <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) =>
       (
-        run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>,
+        run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>
       ) => ({
         transport: el,
         mutation: false,
@@ -43,7 +35,7 @@ const allHelpers = (namespace: string) =>
     mutation:
       <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) =>
       (
-        run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>,
+        run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>
       ) => ({
         transport: el,
         mutation: true,
@@ -71,7 +63,7 @@ const onAction =
   <T extends Action>(
     { parser, run }: T,
     onError: (r: any) => any,
-    onSuccess: (r: any) => any,
+    onSuccess: (r: any) => any
   ) =>
   async (input?: ZodTypeAny): Promise<any> => {
     try {
@@ -91,11 +83,14 @@ const exportDomain = <T extends NamedRecord>(domain: T): T => {
   return domain
 }
 
+const serverOrBrowser = (server: () => unknown, browser: () => unknown) =>
+  typeof window === 'undefined' ? server() : browser()
+
 export {
   exportDomain,
   findActionInDomain,
   makeAction,
   onAction,
-  publishInNamespace,
+  serverOrBrowser,
 }
 export type { Action }

@@ -5,15 +5,16 @@ import { useEffect, useState } from 'react'
 export default function HomePage({
   message,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const [data, setData] = useState("");
+  const [data, setData] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
       const msg = await messages.hello.run()
+      console.log({ msg })
       setData(msg)
     }
     fetchData()
-  }, [data])
+  }, [])
 
   return (
     <div>

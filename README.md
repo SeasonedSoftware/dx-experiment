@@ -35,29 +35,29 @@ You will find in the `domain-logic/messages/index.ts` file an empty domain calle
 ```ts
 import { exportDomain } from '../prelude'
 
-const messages = exportDomain({})
+const messages = exportDomain('messages', {})
 export { messages }
 ```
 
 Then import some useful function from prelude inside `domain-logic/messages/index.ts` so we can build your first action:
 
 ```ts
-import { exportDomain, makeAction, success } from '../prelude'
+import { exportDomain, makeAction } from '../prelude'
 ```
 
 After that we can get our action constructor for the `http` transport, since our first action will be a simple hello world that takes no parameters over a HTTP `GET` call.
 You can destructure http action constructor by using the line:
 
 ```ts
-const { query } = makeAction('messages').http
+const { query } = makeAction.http
 ```
 
 Note that there are always 2 kinds of constructors, `query` and `mutation`.
 The next step is to call the constructor and store a key named after your action inside the `messages` domain:
 
 ```ts
-const messages = exportDomain({
-  hello: query()(() => success({ message: 'Hello World' })),
+const messages = exportDomain('messages', {
+  hello: query()(async () => ({ message: 'Hello World' })),
 })
 ```
 
@@ -66,10 +66,10 @@ Export at the end of the file the object that you have built with the actions.
 The entire file `domain-logic/messages/index.ts` should look like this:
 
 ```ts
-import { exportDomain, makeAction, success } from '../prelude'
-const { query } = makeAction('messages').http
-const messages = exportDomain({
-  hello: query()(() => success({ message: 'Hello World' })),
+import { exportDomain, makeAction } from '../prelude'
+const { query } = makeAction.http
+const messages = exportDomain('messages', {
+  hello: query()(async () => ({ message: 'Hello World' })),
 })
 export { messages }
 ```

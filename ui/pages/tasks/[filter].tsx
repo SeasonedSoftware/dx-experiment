@@ -15,15 +15,7 @@ export default function TodosPage({
   filter,
   allTasks,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const addTask = (payload: { text: string }) => {
-    fetch('/api/croods/tasks/post', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    })
-  }
-
-  const clearCompleted = () =>
-    fetch('/api/croods/tasks/clear-completed', { method: 'POST' })
+  const addTask = (payload: { text: string }) => tasks.post.run(payload)
 
   return (
     <div className="layout">
@@ -50,17 +42,9 @@ export default function TodosPage({
                   key={`task-${idx}`}
                   task={task}
                   update={({ text, completed }: Partial<Task>) =>
-                    fetch('/api/croods/tasks/put', {
-                      method: 'POST',
-                      body: JSON.stringify({ id: task.id, text, completed }),
-                    })
+                    tasks.put.run({ id: task.id!, text, completed })
                   }
-                  destroy={() =>
-                    fetch('/api/croods/tasks/delete', {
-                      method: 'POST',
-                      body: JSON.stringify({ id: task.id }),
-                    })
-                  }
+                  destroy={() => tasks.delete.run({ id: task.id! })}
                 />
               ))}
           </ul>
@@ -69,7 +53,7 @@ export default function TodosPage({
           filters={FILTERS}
           current={filter}
           tasks={allTasks}
-          clearAll={clearCompleted}
+          clearAll={() => tasks['clear-completed'].run()}
         />
       </section>
       <FooterInfo />
@@ -77,15 +61,13 @@ export default function TodosPage({
   )
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: FILTERS.map((filter) => ({ params: { filter } })),
-    fallback: false,
-  }
-}
+export const getStaticPaths: GetStaticPaths = async () => ({
+  paths: FILTERS.map((filter) => ({ params: { filter } })),
+  fallback: false,
+})
 
 export const getStaticProps = async (
-  context: GetStaticPropsContext<{ filter: string }>,
+  context: GetStaticPropsContext<{ filter: string }>
 ) => {
   const allTasks = await tasks.get.run()
 

@@ -15,38 +15,29 @@ type Action<I extends ZodTypeAny = ZodTypeAny, O = unknown> = {
   mutation: boolean
   parser?: I
   run: (input: z.infer<I>) => Promise<O>
-  name: string | null
 }
 
-const allHelpers = (namespace: string) =>
-  ALL_TRANSPORTS.map((el) => ({
-    query:
-      <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) =>
-      (
-        run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>
-      ) => ({
-        transport: el,
-        mutation: false,
-        parser,
-        run,
-        name: null,
-      }),
+const allHelpers = ALL_TRANSPORTS.map((el) => ({
+  query:
+    <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) =>
+    (run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>) => ({
+      transport: el,
+      mutation: false,
+      parser,
+      run,
+    }),
 
-    mutation:
-      <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) =>
-      (
-        run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>
-      ) => ({
-        transport: el,
-        mutation: true,
-        parser,
-        run,
-        name: null,
-      }),
-  }))
+  mutation:
+    <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) =>
+    (run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>) => ({
+      transport: el,
+      mutation: true,
+      parser,
+      run,
+    }),
+}))
 
-const makeAction = (namespace: string) =>
-  zipObject(ALL_TRANSPORTS, allHelpers(namespace))
+const makeAction = zipObject(ALL_TRANSPORTS, allHelpers)
 
 type Actions = Record<string, Action>
 type DomainActions = Record<string, Actions>
@@ -75,15 +66,38 @@ const onAction =
     }
   }
 
-type NamedRecord = Record<string, { name: string | null }>
-const exportDomain = <T extends NamedRecord>(domain: T): T => {
-  Object.keys(domain).forEach((k) => {
-    domain[k].name = k
+const exportDomain = <T extends Actions>(namespace: string, domain: T): T => {
+  Object.keys(domain).forEach((key) => {
+    const oldRun = domain[key].run
+    const newRun = async (input: Parameters<typeof oldRun>[0]) => {
+      return serverOrBrowser(
+        () => oldRun(input),
+        async () => {
+          const result = await fetch(
+            `/api/croods/${namespace}/${key}`,
+            domain[key].mutation
+              ? {
+                  method: 'POST',
+                  body: JSON.stringify(input),
+                }
+              : {}
+          )
+          try {
+            const json = await result.json()
+            JSON.parse(json)
+            return json
+          } catch (err) {
+            return result
+          }
+        }
+      )
+    }
+    domain[key].run = newRun
   })
   return domain
 }
 
-const serverOrBrowser = (server: () => unknown, browser: () => unknown) =>
+const serverOrBrowser = <T>(server: () => T, browser: () => T) =>
   typeof window === 'undefined' ? server() : browser()
 
 export {

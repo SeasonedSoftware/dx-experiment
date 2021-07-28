@@ -52,10 +52,10 @@ type Actions = Record<string, Action>
 type DomainActions = Record<string, Actions>
 
 const findActionInDomain =
-  (rules: DomainActions) =>
+  <T extends DomainActions, U extends keyof T>(rules: T) =>
   (transport: Transport) =>
-  (namespace: string, actionName: string): Action | undefined => {
-    const action = rules[namespace]?.[actionName]
+  (namespace: U, actionName: string): Action | undefined => {
+    const action = rules[namespace][actionName]
     return action && (action.transport === transport ? action : undefined)
   }
 

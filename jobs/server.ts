@@ -30,20 +30,23 @@ const subscriber = createSubscriber({ connectionString: databaseURL })
 subscriber.notifications.on(channel, async (msg) => {
   // Payload as passed to subscriber.notify() (see below)
   console.log(`Received notification in '${channel}':`, msg)
-  const [requestedAction, namespace] = split(msg.channel, '@')
+  const [requestedAction, namespace] = split(msg.channel, '@') as [
+    string,
+    'tasks' | 'messages'
+  ]
   const maybeRequestedAction = findAction('notification')(
     namespace,
-    requestedAction,
+    requestedAction
   )
   if (isNil(maybeRequestedAction)) {
     console.error(
-      `Could not find action ${requestedAction} in ${namespace}. Ensure the action transport is set to 'notification'`,
+      `Could not find action ${requestedAction} in ${namespace}. Ensure the action transport is set to 'notification'`
     )
   } else {
     return onAction(
       maybeRequestedAction,
       (errors) => console.error({ errors }),
-      (data) => console.log({ data }),
+      (data) => console.log({ data })
     )(msg.payload)
   }
 })
@@ -86,7 +89,7 @@ const start = async () => {
   try {
     await server.listen(3001)
     server.log.info(
-      `server listening on ${(server.server.address() as AddressInfo)?.port}`,
+      `server listening on ${(server.server.address() as AddressInfo)?.port}`
     )
   } catch (err) {
     server.log.error(err)

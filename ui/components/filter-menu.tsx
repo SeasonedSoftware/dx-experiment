@@ -9,11 +9,11 @@ interface ILinkProps {
 
 const FilterLink = ({ filter, active }: ILinkProps) => (
   <li>
-    <Link href={`/${filter}`}>
+    <Link href={`/tasks/${filter}`}>
       <a
         className={cx(
           active && 'border-red-600 dark:border-green-600',
-          'p-1 px-2 rounded border hover:border-red-700 dark:hover:border-green-500 border-transparent text-current',
+          'p-1 px-2 rounded border hover:border-red-700 dark:hover:border-green-500 border-transparent text-current'
         )}
       >
         {startCase(filter)}

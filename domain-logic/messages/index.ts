@@ -1,9 +1,9 @@
 import { makeAction, exportDomain } from '../prelude'
 
-const { query } = makeAction('messages').http
+const { query } = makeAction.http
 
-const messages = exportDomain({
-  hello: query<string>()(async () => 'Hello world'),
+const messages = exportDomain('messages', {
+  hello: query<string>()(async () => 'Hello'),
 })
 
 export { messages }

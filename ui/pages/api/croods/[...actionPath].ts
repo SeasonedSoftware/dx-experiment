@@ -11,15 +11,19 @@ const makeHandler =
       res.setHeader('Allow', 'POST, PATCH, PUT, DELETE')
       return res.status(405).end()
     }
+
     return onAction(
       action,
       (errors) => res.status(500).json({ errors, input }),
-      (data) => res.status(200).json(data),
+      (data) => res.status(200).json(JSON.stringify(data))
     )(input)
   }
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const [namespace, requestedAction] = req.query.actionPath as string[]
+  const [namespace, requestedAction] = req.query.actionPath as [
+    'tasks' | 'messages',
+    string
+  ]
   const maybeRequestedAction = findHttpAction(namespace, requestedAction)
   const maybeResolvedAction =
     maybeRequestedAction || findHttpAction(namespace, req.method!.toLowerCase())

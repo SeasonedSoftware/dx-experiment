@@ -1,12 +1,25 @@
 import { InferGetStaticPropsType } from 'next'
 import { messages } from '../../domain-logic/messages'
+import { useEffect, useState } from 'react'
 
 export default function HomePage({
   message,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const [data, setData] = useState('')
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const msg = await messages.hello.run()
+      console.log({ msg })
+      setData(msg)
+    }
+    fetchData()
+  }, [])
+
   return (
     <div>
       <h1>{message}</h1>
+      <h1>{data}</h1>
     </div>
   )
 }

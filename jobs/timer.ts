@@ -19,7 +19,7 @@ const on: (unit?: number) => ScheduleUnit = (unit) => ({ kind: 'on', unit })
 
 // Destructor
 const scheduleUnitToString: (scheduleUnit: ScheduleUnit) => string = (
-  scheduleUnit,
+  scheduleUnit
 ) =>
   isNil(scheduleUnit.unit)
     ? '*'
@@ -51,7 +51,7 @@ const scheduleToString: (schedule: Schedule) => string = (schedule) =>
   reduce(
     schedule,
     (memo, value) => memo + scheduleUnitToString(value) + ' ',
-    '',
+    ''
   )
 
 type ScheduledJob = {
@@ -62,10 +62,14 @@ type ScheduledJob = {
 
 // Constructors
 const scheduleAction: (
-  schedule: Schedule,
-) => (namespace: string, actionName: string) => ScheduledJob =
+  schedule: Schedule
+) => (namespace: 'tasks' | 'messages', actionName: string) => ScheduledJob =
   (schedule: Schedule) =>
-  (namespace: string, actionName: string, actionParameters?: any) => {
+  (
+    namespace: 'tasks' | 'messages',
+    actionName: string,
+    actionParameters?: any
+  ) => {
     const maybeAction = findAction('timer')(namespace, actionName)
 
     if (isNil(maybeAction)) {

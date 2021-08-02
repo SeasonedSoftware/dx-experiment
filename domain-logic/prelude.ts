@@ -1,13 +1,5 @@
 import { z, ZodTypeAny } from 'zod'
-import { PrismaClient } from '@prisma/client'
 import zipObject from 'lodash/zipObject'
-import { makePrismaPublisher } from './publisher'
-
-const prisma = new PrismaClient()
-const databasePublihserChannel: string =
-  process.env.CHANNEL ?? 'database-publisher-channel'
-
-const publishInNamespace = makePrismaPublisher(prisma, databasePublihserChannel)
 
 const ALL_TRANSPORTS = [
   'http',
@@ -23,47 +15,38 @@ type Action<I extends ZodTypeAny = ZodTypeAny, O = unknown> = {
   mutation: boolean
   parser?: I
   run: (input: z.infer<I>) => Promise<O>
-  name: string | null
 }
 
-const allHelpers = (namespace: string) =>
-  ALL_TRANSPORTS.map((el) => ({
-    query:
-      <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) =>
-      (
-        run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>,
-      ) => ({
-        transport: el,
-        mutation: false,
-        parser,
-        run,
-        name: null,
-      }),
+const allHelpers = ALL_TRANSPORTS.map((el) => ({
+  query:
+    <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) =>
+    (run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>) => ({
+      transport: el,
+      mutation: false,
+      parser,
+      run,
+    }),
 
-    mutation:
-      <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) =>
-      (
-        run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>,
-      ) => ({
-        transport: el,
-        mutation: true,
-        parser,
-        run,
-        name: null,
-      }),
-  }))
+  mutation:
+    <O, P extends ZodTypeAny | undefined = undefined>(parser?: P) =>
+    (run: (input: P extends ZodTypeAny ? z.infer<P> : void) => Promise<O>) => ({
+      transport: el,
+      mutation: true,
+      parser,
+      run,
+    }),
+}))
 
-const makeAction = (namespace: string) =>
-  zipObject(ALL_TRANSPORTS, allHelpers(namespace))
+const makeAction = zipObject(ALL_TRANSPORTS, allHelpers)
 
 type Actions = Record<string, Action>
 type DomainActions = Record<string, Actions>
 
 const findActionInDomain =
-  (rules: DomainActions) =>
+  <T extends DomainActions, U extends keyof T>(rules: T) =>
   (transport: Transport) =>
-  (namespace: string, actionName: string): Action | undefined => {
-    const action = rules[namespace]?.[actionName]
+  (namespace: U, actionName: string): Action | undefined => {
+    const action = rules[namespace][actionName]
     return action && (action.transport === transport ? action : undefined)
   }
 
@@ -71,7 +54,7 @@ const onAction =
   <T extends Action>(
     { parser, run }: T,
     onError: (r: any) => any,
-    onSuccess: (r: any) => any,
+    onSuccess: (r: any) => any
   ) =>
   async (input?: ZodTypeAny): Promise<any> => {
     try {
@@ -83,19 +66,39 @@ const onAction =
     }
   }
 
-type NamedRecord = Record<string, { name: string | null }>
-const exportDomain = <T extends NamedRecord>(domain: T): T => {
-  Object.keys(domain).forEach((k) => {
-    domain[k].name = k
+const exportDomain = <T extends Actions>(namespace: string, domain: T): T => {
+  Object.keys(domain).forEach((key) => {
+    const oldRun = domain[key].run
+    const newRun = async (input: Parameters<typeof oldRun>[0]) => {
+      return serverOrBrowser(
+        () => oldRun(input),
+        async () => {
+          const result = await fetch(
+            `/api/croods/${namespace}/${key}`,
+            domain[key].mutation
+              ? {
+                  method: 'POST',
+                  body: JSON.stringify(input),
+                }
+              : {}
+          )
+          return await result.json()
+        }
+      )
+    }
+    domain[key].run = newRun
   })
   return domain
 }
+
+const serverOrBrowser = <T>(server: () => T, browser: () => T) =>
+  typeof window === 'undefined' ? server() : browser()
 
 export {
   exportDomain,
   findActionInDomain,
   makeAction,
   onAction,
-  publishInNamespace,
+  serverOrBrowser,
 }
 export type { Action }

@@ -17,8 +17,7 @@
     "lint:eslint": "eslint ./",
     "lint:prettier": "prettier --check \"{**/*.js,**/*.jsx,**/*.ts,**/*.tsx}\"",
     "lint:types": "yarn workspaces run lint:types",
-    "test": "jest -w",
-    "test:ci": "jest",
+    "test": "dotenv -e .env yarn workspaces run test",
     "w:domain": "yarn workspace domain-logic",
     "w:jobs": "yarn workspace jobs",
     "w:ui": "yarn workspace ui"

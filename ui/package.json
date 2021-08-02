@@ -17,7 +17,8 @@
     "migrate": "prisma migrate deploy --preview-feature",
     "start": "next start -p $PORT",
     "studio": "prisma studio",
-    "tw": "npx tailwindcss -i ./styles/global.css -o ./public/styles.css"
+    "tw": "npx tailwindcss -i ./styles/global.css -o ./public/styles.css",
+    "test": "jest"
   },
   "dependencies": {
     "axios": "0.21.1",
@@ -31,8 +32,10 @@
     "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^13.1.9",
     "@types/react": "17.0.14",
-    "next-transpile-modules": "^8.0.0",
     "babel-plugin-superjson-next": "^0.3.0",
+    "jest": "^27.0.6",
+    "next-transpile-modules": "^8.0.0",
+    "ts-jest": "^27.0.4",
     "typescript": "4.3.5"
   },
   "publishConfig": {

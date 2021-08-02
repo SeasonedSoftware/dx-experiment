@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "yarn start",
+    "test": "jest --passWithNoTests",
     "start": "tsc && node dist/server.js",
     "lint:types": "tsc --project tsconfig.json --noEmit"
   },
@@ -22,6 +23,8 @@
   },
   "devDependencies": {
     "@types/node-schedule": "^1.3.2",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.4",
     "typescript": "^4.3.5"
   }
 }

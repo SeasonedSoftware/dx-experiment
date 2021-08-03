@@ -15,3 +15,13 @@ model Task {
 
   @@map("task")
 }
+
+model Story {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  asA       String   @map("as_a")
+  iWant     String   @map("i_want")
+  soThat    String   @map("so_that")
+  createdAt DateTime @unique @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@map("story")
+}

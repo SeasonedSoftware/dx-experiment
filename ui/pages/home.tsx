@@ -1,20 +1,11 @@
 import { InferGetStaticPropsType } from 'next'
 import { messages } from '../../domain-logic/messages'
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
 export default function HomePage({
   message,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const [data, setData] = useState('')
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const msg = await messages.hello.run()
-      console.log({ msg })
-      setData(msg)
-    }
-    fetchData()
-  }, [])
+  const { data } = useSWR('hello', messages.hello.run, { initialData: message })
 
   return (
     <div>

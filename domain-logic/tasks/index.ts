@@ -30,14 +30,14 @@ const publishInNamespace = makePrismaPublisher(prisma, databasePublisherChannel)
 const publish = publishInNamespace('tasks')
 
 const tasks = exportDomain('tasks', {
-  post: mutation<Task, typeof taskCreateParser>(taskCreateParser)(
+  create: mutation<Task, typeof taskCreateParser>(taskCreateParser)(
     async (input) => prisma().task.create({ data: input })
   ),
-  get: query<Task[]>()(async () => prisma().task.findMany()),
+  all: query<Task[]>()(async () => prisma().task.findMany()),
   delete: mutation<Task, typeof taskDeleteParser>(taskDeleteParser)(
     async (input) => prisma().task.delete({ where: input })
   ),
-  put: mutation<Task, typeof taskUpdateParser>(taskUpdateParser)(
+  update: mutation<Task, typeof taskUpdateParser>(taskUpdateParser)(
     async (input) =>
       prisma().task.update({ where: { id: input.id }, data: input })
   ),

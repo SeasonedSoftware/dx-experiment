@@ -8,14 +8,21 @@ import FooterInfo from 'components/footer-info'
 import ListFooter from 'components/list-footer'
 import Form from 'components/form'
 import { Task, tasks } from 'domain-logic/tasks'
+import useSWR from 'swr'
 
 const FILTERS = ['all', 'active', 'completed']
 
 export default function TodosPage({
   filter,
-  allTasks,
+  initialData,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const addTask = (payload: { text: string }) => tasks.post.run(payload)
+  const { data: allTasks, mutate } = useSWR('tasks', tasks.all.run, {
+    initialData,
+  })
+  const addTask = async (payload: { text: string }) => {
+    await tasks.create.run(payload)
+    mutate()
+  }
 
   return (
     <div className="layout">
@@ -27,7 +34,7 @@ export default function TodosPage({
         <section>
           <ul className="flex flex-col divide-y dark:divide-gray-600 shadow-inner">
             {allTasks
-              .filter(({ completed }) => {
+              ?.filter(({ completed }) => {
                 switch (filter) {
                   case 'active':
                     return !completed
@@ -41,20 +48,29 @@ export default function TodosPage({
                 <ListItem
                   key={`task-${idx}`}
                   task={task}
-                  update={({ text, completed }: Partial<Task>) =>
-                    tasks.put.run({ id: task.id!, text, completed })
-                  }
-                  destroy={() => tasks.delete.run({ id: task.id! })}
+                  update={async ({ text, completed }: Partial<Task>) => {
+                    await tasks.update.run({ id: task.id!, text, completed })
+                    mutate()
+                  }}
+                  destroy={async () => {
+                    await tasks.delete.run({ id: task.id! })
+                    mutate()
+                  }}
                 />
               ))}
           </ul>
         </section>
-        <ListFooter
-          filters={FILTERS}
-          current={filter}
-          tasks={allTasks}
-          clearAll={() => tasks['clear-completed'].run()}
-        />
+        {allTasks && (
+          <ListFooter
+            filters={FILTERS}
+            current={filter}
+            tasks={allTasks}
+            clearAll={async () => {
+              await tasks['clear-completed'].run()
+              mutate()
+            }}
+          />
+        )}
       </section>
       <FooterInfo />
     </div>
@@ -69,11 +85,11 @@ export const getStaticPaths: GetStaticPaths = async () => ({
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ filter: string }>
 ) => {
-  const allTasks = await tasks.get.run()
+  const allTasks = await tasks.all.run()
 
   return {
     props: {
-      allTasks,
+      initialData: allTasks,
       filter: context.params?.filter ?? 'all',
     },
     revalidate: 1,

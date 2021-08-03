@@ -1,6 +1,7 @@
 // Require the framework and instantiate it
 import fastify from 'fastify'
 import fastifyPostgres from 'fastify-postgres'
+import fastifyWS from 'fastify-websocket'
 import createSubscriber from 'pg-listen'
 import { AddressInfo } from 'net'
 import { exit } from 'process'
@@ -75,14 +76,32 @@ const server = fastify({ logger: true })
 server.register(fastifyPostgres, {
   connectionString: databaseURL,
 })
+server.register(fastifyWS)
 
-// Declare a route
+// A health rout just to check if server is running
 server.get('/health', async (_request, _reply) => {
   const client = await server.pg.connect()
   const { rows } = await client.query('SELECT version()', [])
   client.release()
   return { db: rows }
 })
+
+type ActionCall = {
+  domain: string
+  action: string
+}
+
+server.get<{ Params: ActionCall }>(
+  '/ws/:domain/:action',
+  { websocket: true },
+  (connection, req) => {
+    const { domain, action } = req.params
+    connection.socket.on('message', (message: unknown) => {
+      // message.toString() === 'hi from client'
+      connection.socket.send(`hi from action ${action} at domain ${domain}`)
+    })
+  }
+)
 
 // Run the server!
 const start = async () => {

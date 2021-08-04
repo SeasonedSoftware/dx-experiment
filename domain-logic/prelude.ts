@@ -82,7 +82,11 @@ const exportDomain = <T extends Actions>(namespace: string, domain: T): T => {
                 }
               : {}
           )
-          return await result.json()
+          const json = await result.json()
+          if (!result.ok) {
+            throw json
+          }
+          return json
         }
       )
     }

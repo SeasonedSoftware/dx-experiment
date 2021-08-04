@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Story } from '@prisma/client'
 
-export default function StoryItem({ asA, iWant, soThat }: Story) {
+export default function StoryItem({ asA, iWant, soThat, createdAt }: Story) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -13,10 +13,13 @@ export default function StoryItem({ asA, iWant, soThat }: Story) {
         {iWant.substring(0, 1).toUpperCase() + iWant.substring(1)}
       </span>
       {open && (
-        <p className="mt-2 mb-4">
-          As a <strong>{asA}</strong> I want to <strong>{iWant}</strong> So that{' '}
-          <strong>{soThat}</strong>.
-        </p>
+        <>
+          <p className="mt-2">
+            As a <strong>{asA}</strong> I want to <strong>{iWant}</strong> So that{' '}
+            <strong>{soThat}</strong>.
+          </p>
+          <p className="mb-4">{createdAt.toLocaleDateString && createdAt.toLocaleDateString()}</p>
+        </>
       )}
     </div>
   )

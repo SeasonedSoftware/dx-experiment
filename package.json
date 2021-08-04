@@ -9,6 +9,7 @@
     "jobs"
   ],
   "scripts": {
+    "migrate": "dotenv -e .env yarn w:domain migrate",
     "dev:domain": "dotenv -e .env yarn w:domain dev",
     "dev:jobs": "dotenv -e .env yarn w:jobs dev",
     "dev:ui": "dotenv -e .env yarn w:ui dev",

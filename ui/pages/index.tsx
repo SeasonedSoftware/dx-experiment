@@ -18,7 +18,7 @@ export default function TodosPage({
         </h1>
       </header>
       <main className="flex flex-col flex-grow md:flex-row gap-8 items-center md:items-start pt-6 md:max-w-[50rem] w-full">
-        <section className="flex flex-col justify-center items-center min-w-[20rem] bg-white dark:bg-gray-800">
+        <section className="flex flex-col justify-center items-center w-full md:min-w-[20rem] bg-white dark:bg-gray-800">
           <StoryForm />
         </section>
         <div className="flex-grow flex flex-col w-full border border-gray-100 border-opacity-20 divide-y divide-gray-100 divide-opacity-20">

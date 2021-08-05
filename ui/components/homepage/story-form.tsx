@@ -1,26 +1,42 @@
-import { Prisma } from '@prisma/client'
+import { Prisma, Story } from '@prisma/client'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { stories } from 'domain-logic/stories'
 import { isEmpty } from 'lodash'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { mutate } from 'swr'
-import { storyCreateParser } from 'domain-logic/stories/parsers'
+import { createParser, updateParser } from 'domain-logic/stories/parsers'
 import { Input } from 'components/forms/input'
+import { useEffect, useRef } from 'react'
 
 type Inputs = Pick<Prisma.StoryCreateInput, 'asA' | 'iWant' | 'soThat'>
 
-const StoryForm = () => {
-  const { register, reset, handleSubmit, formState } = useForm<Inputs>({
-    resolver: zodResolver(storyCreateParser),
-  })
+type Props = {
+  list?: Story[]
+  editing: string | null
+  setEditing: (a: string | null) => void
+}
+const StoryForm = ({ list, editing, setEditing }: Props) => {
+  const { register, reset, setFocus, handleSubmit, formState } =
+    useForm<Inputs>({
+      resolver: zodResolver(createParser),
+    })
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (isEmpty(formState.errors)) {
-      await stories.create.run(data)
+      editing
+        ? await stories.update.run({ ...data, id: editing! })
+        : await stories.create.run(data)
       mutate('stories')
       reset()
+      setEditing(null)
+      setFocus('asA')
     }
   }
+
+  useEffect(() => {
+    const story = list?.find(({ id }) => id === editing)
+    reset({ asA: story?.asA, iWant: story?.iWant, soThat: story?.soThat })
+  }, [editing])
 
   return (
     <form
@@ -46,7 +62,7 @@ const StoryForm = () => {
         className="p-4 text-2xl bg-blue-400 dark:bg-blue-900 text-center"
         type="submit"
       >
-        Create
+        {editing ? 'Save' : 'Create'}
       </button>
     </form>
   )

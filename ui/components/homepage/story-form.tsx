@@ -4,9 +4,9 @@ import { stories } from 'domain-logic/stories'
 import { isEmpty } from 'lodash'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { mutate } from 'swr'
-import { createParser, updateParser } from 'domain-logic/stories/parsers'
+import { createParser } from 'domain-logic/stories/parsers'
 import { Input } from 'components/forms/input'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 
 type Inputs = Pick<Prisma.StoryCreateInput, 'asA' | 'iWant' | 'soThat'>
 
@@ -15,7 +15,7 @@ type Props = {
   editing: string | null
   setEditing: (a: string | null) => void
 }
-const StoryForm = ({ list, editing, setEditing }: Props) => {
+export default function StoryForm({ list, editing, setEditing }: Props) {
   const { register, reset, setFocus, handleSubmit, formState } =
     useForm<Inputs>({
       resolver: zodResolver(createParser),
@@ -67,5 +67,3 @@ const StoryForm = ({ list, editing, setEditing }: Props) => {
     </form>
   )
 }
-
-export default StoryForm

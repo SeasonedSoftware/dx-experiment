@@ -1,3 +1,3 @@
-const withTM = require('next-transpile-modules')(['domain-logic', 'jobs'])
+const withTM = require('next-transpile-modules')(['domain-logic'])
 
 module.exports = withTM({})

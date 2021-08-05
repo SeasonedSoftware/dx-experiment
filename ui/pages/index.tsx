@@ -12,7 +12,7 @@ export default function TodosPage({
     initialData,
   })
   return (
-    <div className="layout">
+    <div className="flex flex-col w-screen min-h-screen overflow-y-auto p-4 items-center justify-center bg-gray-50 dark:bg-gray-900 dark:text-white">
       <header className="border-b border-gray-200 dark:border-gray-800 w-full pb-3">
         <h1 className="text-center text-4xl text-red-800 dark:text-green-600 font-thin">
           Stories

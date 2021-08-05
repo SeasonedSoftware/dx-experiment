@@ -11,7 +11,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {...props}
         className="p-4 text-2xl w-full dark:bg-gray-800 dark:border-b border-gray-600 dark:placeholder-gray-600"
       />
-      {error?.message && <p className="text-red-600">{error?.message}</p>}
+      {error?.message && (
+        <p className="text-center p-1 bg-red-300 text-red-800">
+          {error.message}
+        </p>
+      )}
     </>
   )
 )

@@ -23,7 +23,10 @@ const StoryForm = () => {
   }
 
   return (
-    <form className="flex flex-col w-full" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="flex flex-col w-full shadow-lg divide-y divide-gray-200 dark:divide-gray-700"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <Input
         {...register('asA')}
         placeholder="As a"
@@ -39,7 +42,10 @@ const StoryForm = () => {
         placeholder="So that"
         error={formState.errors.soThat}
       />
-      <button className="p-4 text-2xl bg-blue-900 text-center" type="submit">
+      <button
+        className="p-4 text-2xl bg-blue-400 dark:bg-blue-900 text-center"
+        type="submit"
+      >
         Create
       </button>
     </form>

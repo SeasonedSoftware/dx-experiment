@@ -20,10 +20,7 @@ const makeHandler =
   }
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const [namespace, requestedAction] = req.query.actionPath as [
-    'tasks' | 'messages',
-    string
-  ]
+  const [namespace, requestedAction] = req.query.actionPath as [string, string]
   const maybeRequestedAction = findHttpAction(namespace, requestedAction)
   const maybeResolvedAction =
     maybeRequestedAction || findHttpAction(namespace, req.method!.toLowerCase())

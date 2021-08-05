@@ -7,11 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Task {
+model Story {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  text      String
-  completed Boolean  @default(false)
+  asA       String   @map("as_a")
+  iWant     String   @map("i_want")
+  soThat    String   @map("so_that")
   createdAt DateTime @unique @default(now()) @map("created_at") @db.Timestamp(6)
 
-  @@map("task")
+  @@map("story")
 }

@@ -1,11 +1,10 @@
 import { findActionInDomain, onAction } from './prelude'
-import { tasks } from './tasks'
 import { messages } from './messages'
+import { stories } from './stories'
 import type { Action } from './prelude'
-import type { Task } from './tasks'
 
-const rules = { tasks, messages }
+const rules = { messages, stories }
 
 const findAction = findActionInDomain(rules)
 
-export { Action, Task, findAction, onAction }
+export { Action, findAction, onAction }

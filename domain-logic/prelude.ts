@@ -43,9 +43,9 @@ type Actions = Record<string, Action>
 type DomainActions = Record<string, Actions>
 
 const findActionInDomain =
-  <T extends DomainActions, U extends keyof T>(rules: T) =>
+  (rules: DomainActions) =>
   (transport: Transport) =>
-  (namespace: U, actionName: string): Action | undefined => {
+  (namespace: string, actionName: string): Action | undefined => {
     const action = rules[namespace][actionName]
     return action && (action.transport === transport ? action : undefined)
   }
@@ -82,7 +82,11 @@ const exportDomain = <T extends Actions>(namespace: string, domain: T): T => {
                 }
               : {}
           )
-          return await result.json()
+          const json = await result.json()
+          if (!result.ok) {
+            throw json
+          }
+          return json
         }
       )
     }

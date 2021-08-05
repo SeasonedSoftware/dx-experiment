@@ -24,7 +24,7 @@ const StoryForm = () => {
 
   return (
     <form
-      className="flex flex-col w-full shadow-lg divide-y divide-gray-200 dark:divide-gray-700"
+      className="flex flex-col w-full gap-1 shadow-lg divide-y divide-gray-200 dark:divide-gray-700"
       onSubmit={handleSubmit(onSubmit)}
     >
       <Input

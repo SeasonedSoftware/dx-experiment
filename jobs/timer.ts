@@ -63,13 +63,9 @@ type ScheduledJob = {
 // Constructors
 const scheduleAction: (
   schedule: Schedule
-) => (namespace: 'tasks' | 'messages', actionName: string) => ScheduledJob =
+) => (namespace: string, actionName: string) => ScheduledJob =
   (schedule: Schedule) =>
-  (
-    namespace: 'tasks' | 'messages',
-    actionName: string,
-    actionParameters?: any
-  ) => {
+  (namespace: string, actionName: string, actionParameters?: any) => {
     const maybeAction = findAction('timer')(namespace, actionName)
 
     if (isNil(maybeAction)) {

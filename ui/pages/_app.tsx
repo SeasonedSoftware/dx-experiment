@@ -5,7 +5,7 @@ function SeasonedApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Todos</title>
+        <title>KODO</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Component {...pageProps} />

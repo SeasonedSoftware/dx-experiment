@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { stories } from 'domain-logic/stories'
-import { isEmpty, map } from 'lodash'
+import { isEmpty } from 'lodash'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { mutate } from 'swr'
 import { storyCreateParser } from 'domain-logic/stories/parsers'
@@ -27,17 +27,17 @@ const StoryForm = () => {
       <Input
         {...register('asA')}
         placeholder="As a"
-        errors={formState.errors}
+        error={formState.errors.asA}
       />
       <Input
         {...register('iWant')}
         placeholder="I want to"
-        errors={formState.errors}
+        error={formState.errors.iWant}
       />
       <Input
         {...register('soThat')}
         placeholder="So that"
-        errors={formState.errors}
+        error={formState.errors.soThat}
       />
       <button className="p-4 text-2xl bg-blue-900 text-center" type="submit">
         Create

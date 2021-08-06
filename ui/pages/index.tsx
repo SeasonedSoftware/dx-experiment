@@ -37,7 +37,8 @@ export default function TodosPage({
 }
 
 export const getStaticProps = async () => {
-  const initialData = await stories.all.run()
+  const storyList = await stories.all.run()
+  const initialData = storyList.map((story) => ({...story, createdAt: story.createdAt.toISOString()}))
 
   return {
     props: { initialData },

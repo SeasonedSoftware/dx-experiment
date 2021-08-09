@@ -14,5 +14,6 @@ model Story {
   soThat    String   @map("so_that")
   createdAt DateTime @unique @default(now()) @map("created_at") @db.Timestamp(6)
 
+  @@unique([asA, iWant, soThat])
   @@map("story")
 }

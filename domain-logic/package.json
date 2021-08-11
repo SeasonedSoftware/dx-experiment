@@ -11,9 +11,7 @@
     "build": "prisma generate && yarn migrate && tsc",
     "dev": "prisma generate && yarn migrate && tsc --watch",
     "lint:types": "tsc --project tsconfig.json --noEmit",
-    "migrate-dev": "prisma migrate dev --preview-feature",
     "migrate": "prisma migrate deploy --preview-feature",
-    "studio": "prisma studio",
     "test": "jest"
   },
   "dependencies": {},

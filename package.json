@@ -9,19 +9,19 @@
     "jobs"
   ],
   "scripts": {
-    "migrate": "dotenv -e .env yarn w:domain migrate",
-    "dev:domain": "dotenv -e .env yarn w:domain dev",
-    "dev:jobs": "dotenv -e .env yarn w:jobs dev",
-    "dev:ui": "dotenv -e .env yarn w:ui dev",
+    "prisma": "yarn w:domain prisma",
+    "dev:domain": "yarn w:domain dev",
+    "dev:jobs": "yarn w:jobs dev",
+    "dev:ui": "yarn w:ui dev",
     "build": "yarn workspaces run build",
     "lint": "yarn lint:types && yarn lint:eslint && yarn lint:prettier",
     "lint:eslint": "eslint ./",
     "lint:prettier": "prettier --check \"{**/*.js,**/*.jsx,**/*.ts,**/*.tsx}\"",
     "lint:types": "yarn workspaces run lint:types",
     "test": "dotenv -e .env yarn workspaces run test",
-    "w:domain": "yarn workspace domain-logic",
-    "w:jobs": "yarn workspace jobs",
-    "w:ui": "yarn workspace ui"
+    "w:domain": "dotenv -e .env -- yarn workspace domain-logic",
+    "w:jobs": "dotenv -e .env -- yarn workspace jobs",
+    "w:ui": "dotenv -e .env -- yarn workspace ui"
   },
   "author": "",
   "license": "ISC",

@@ -1,5 +1,6 @@
 import { z, ZodTypeAny } from 'zod'
 import zipObject from 'lodash/zipObject'
+import superjson from 'superjson'
 
 const ALL_TRANSPORTS = [
   'http',
@@ -78,11 +79,11 @@ const exportDomain = <T extends Actions>(namespace: string, domain: T): T => {
             domain[key].mutation
               ? {
                   method: 'POST',
-                  body: JSON.stringify(input),
+                  body: superjson.stringify(input),
                 }
               : {}
           )
-          const json = await result.json()
+          const json = superjson.parse(await result.text())
           if (!result.ok) {
             throw json
           }

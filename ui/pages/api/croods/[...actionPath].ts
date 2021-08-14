@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Action, findAction, onAction } from 'domain-logic'
 import isNil from 'lodash/isNil'
+import superjson from 'superjson'
 
 const findHttpAction = findAction('http')
 
@@ -15,7 +16,7 @@ const makeHandler =
     return onAction(
       action,
       (errors) => res.status(500).json({ errors, input }),
-      (data) => res.status(200).json(JSON.stringify(data))
+      (data) => res.status(200).json(superjson.stringify(data))
     )(input)
   }
 
@@ -40,7 +41,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       id,
     })
 
-    const body = req.body ? JSON.parse(req.body) : undefined
+    const body = req.body ? superjson.parse(req.body) : undefined
     return makeHandler(resolvedAction)(body, req, res)
   }
 }

@@ -28,5 +28,10 @@ jobs:
       - name: Install dependencies
         run: yarn
 
+      - name: Build
+        run: |
+          cp .env.sample .env
+          yarn build
+
       - name: Run tests
         run: yarn test

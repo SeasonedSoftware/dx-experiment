@@ -13,6 +13,7 @@ model Story {
   iWant     String   @map("i_want")
   soThat    String   @map("so_that")
   createdAt DateTime @unique @default(now()) @map("created_at") @db.Timestamp(6)
+  position  Float    @unique @default(dbgenerated("(nextval('story_position'::regclass))::double precision"))
 
   @@unique([asA, iWant, soThat])
   @@map("story")

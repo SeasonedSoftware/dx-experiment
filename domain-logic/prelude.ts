@@ -75,7 +75,7 @@ const exportDomain = <T extends Actions>(namespace: string, domain: T): T => {
         () => oldRun(input),
         async () => {
           const result = await fetch(
-            `/api/croods/${namespace}/${key}`,
+            `/api/actions/${namespace}/${key}`,
             domain[key].mutation
               ? {
                   method: 'POST',

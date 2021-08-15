@@ -15,6 +15,19 @@ Our main goal is to remove the friction of having to think in terms of HTTP (whi
 
 Another project goal is to keep interfaces easy to design and enforced on the type level. This should help the developer to code against well defined interfaces reducing bugs and cognitive burden.
 
+### Guiding Principles
+
+* The [zen of python](https://www.python.org/dev/peps/pep-0020/) is awesome, start there.
+* We care about modelling concepts from the real world, everything else is accidental complexity.
+* Chose vertical over horizontal scaling as much as possible.
+* The best code is the one you don't need to write.
+* But if it's written somewhere, it's usually better inside your repository.
+* The second best code is the one it's used only for type-checking.
+* The best way to prepare software for the future is coding for the present.
+* The documentation is the part of your system that runs in your fellow humans' mushy computers.
+* If you can code something that will make the documentation shorter, it's usually a good idea.
+* Running software is a living organism, code is its fossil, we should focus on the first.
+
 Bellow there are some past notes that give some context on how we got to this design. Consider it a map of the paths not taken.
 
 ## The Croods model

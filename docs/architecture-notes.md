@@ -5,8 +5,8 @@
 The project is split into 3 main pieces, reflected by the root directory structure.
 These parts are defined by where the code is executed and, therefore, where the state is managed in the client-server model.
 
-* ui - code that runs in the browser.
-* domain-logic - code that is shared between client and server. These are the domain actions (or events depending on terminology) that will always run on the server but have proxy functions to be called in the browser.
+* ui - code that runs in the browser. This is where all the user interface is defined, mostly accidental complexity on how to draw screens and interact through the browser.
+* domain-logic - code that is shared between client and server. These are the domain actions (or events depending on terminology) that will always run on the server but have proxy functions to be called in the browser. This is where most of our essential complexity lives.
 * jobs - code that runs only on server, either on a clock or upon receiving asynchronous messages.
 
 Besides the section *Definitions* from the [README](../README.md) the framework is agnostic in relation to how the application and its database are modelled. The developer should be able to chose something closer to an event sourced application with immutable data or something more along the lines of mutable entities.

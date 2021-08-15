@@ -1,6 +1,23 @@
 # Notes on architecture decisions
 
-## Current croods model
+## Current framework design
+
+The project is split into 3 main pieces, reflected by the root directory structure.
+These parts are defined by where the code is executed and, therefore, where the state is managed in the client-server model.
+
+* ui - code that runs in the browser.
+* domain-logic - code that is shared between client and server. These are the domain actions (or events depending on terminology) that will always run on the server but have proxy functions to be called in the browser.
+* jobs - code that runs only on server, either on a clock or upon receiving asynchronous messages.
+
+Besides the section *Definitions* from the [README](../README.md) the framework is agnostic in relation to how the application and its database are modelled. The developer should be able to chose something closer to an event sourced application with immutable data or something more along the lines of mutable entities.
+
+Our main goal is to remove the friction of having to think in terms of HTTP (which is an implementation detail in most systems) or any other protocol and allow the developer to focus on writing the domain logic, which is usually the main concern of the software development process.
+
+Another project goal is to keep interfaces easy to design and enforced on the type level. This should help the developer to code against well defined interfaces reducing bugs and cognitive burden.
+
+Bellow there are some past notes that give some context on how we got to this design. Consider it a map of the paths not taken.
+
+## The Croods model
 
 ```
 <Fetch> : Concrete type in the backend -> Derive an abstract type in the frontend.

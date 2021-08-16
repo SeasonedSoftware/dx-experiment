@@ -91,3 +91,7 @@ console.log(result) // Hello world
 const result = await messages.hello.run().catch(() => 'Fallback')
 console.log(result) // Fallback
 ```
+
+## Design Rationale
+
+More info on why we designed things the way we did can be found in the [architecture notes document](./docs/architecture-notes.md)

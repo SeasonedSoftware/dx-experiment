@@ -21,7 +21,12 @@
     "lint:eslint": "eslint ./",
     "lint:prettier": "prettier --check \"{**/*.js,**/*.jsx,**/*.ts,**/*.tsx}\"",
     "lint:types": "yarn workspaces run lint:types",
+    "start": "yarn w:ui start",
     "test": "dotenv -e .env yarn workspaces run test",
+    "cypress": "cypress open",
+    "cypress:headless": "cypress run",
+    "e2e": "start-server-and-test start http://localhost:3000 cypress",
+    "e2e:headless": "start-server-and-test start http://localhost:3000 cypress:headless",
     "w:domain": "dotenv -e .env -- yarn workspace domain-logic",
     "w:jobs": "dotenv -e .env -- yarn workspace jobs",
     "w:ui": "dotenv -e .env -- yarn workspace ui"
@@ -37,6 +42,7 @@
     "@typescript-eslint/parser": "^4.29.2",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^27.0.6",
+    "cypress": "^8.3.0",
     "dotenv-cli": "^4.0.0",
     "eslint": "^7.32.0",
     "eslint-config-airbnb": "^18.2.1",
@@ -46,6 +52,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "prettier": "^2.3.2",
+    "start-server-and-test": "^1.13.1",
     "ts-jest": "^27.0.5",
     "typescript": "4.3.5"
   },

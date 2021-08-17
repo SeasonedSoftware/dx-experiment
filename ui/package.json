@@ -23,9 +23,9 @@
   "dependencies": {
     "@hookform/resolvers": "^2.7.1",
     "axios": "0.21.1",
-    "babel-plugin-superjson-next": "^0.3.0",
+    "babel-plugin-superjson-next": "^0.3.1",
     "domain-logic": "link:../domain-logic/dist",
-    "next": "11.0.1",
+    "next": "11.1.0",
     "next-transpile-modules": "^8.0.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
@@ -36,13 +36,13 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
-    "@testing-library/user-event": "^13.1.9",
-    "@types/react": "17.0.14",
+    "@testing-library/user-event": "^13.2.1",
+    "@types/react": "17.0.18",
     "jest": "^27.0.6",
     "postcss": "^8.3.6",
     "postcss-loader": "^6.1.1",
     "tailwindcss": "^2.2.7",
-    "ts-jest": "^27.0.4",
+    "ts-jest": "^27.0.5",
     "typescript": "4.3.5"
   },
   "publishConfig": {

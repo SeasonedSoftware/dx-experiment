@@ -25,7 +25,10 @@ export default function TodosPage({
         <section className="flex flex-col justify-center items-center w-full md:min-w-[20rem] bg-white dark:bg-gray-800">
           <StoryForm setEditing={setEditing} list={data} editing={editing} />
         </section>
-        <div className="flex-grow flex flex-col w-full border border-gray-800 dark:border-gray-700 border-opacity-20 divide-y divide-gray-800 dark:divide-gray-700 divide-opacity-20">
+        <div
+          id="backlog"
+          className="flex-grow flex flex-col w-full border border-gray-800 dark:border-gray-700 border-opacity-20 divide-y divide-gray-800 dark:divide-gray-700 divide-opacity-20"
+        >
           {data?.map((story) => (
             <StoryItem key={story.id} story={story} setEditing={setEditing} />
           ))}

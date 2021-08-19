@@ -21,11 +21,11 @@
     "lint:eslint": "eslint ./",
     "lint:prettier": "prettier --check \"{**/*.js,**/*.jsx,**/*.ts,**/*.tsx}\"",
     "lint:types": "yarn workspaces run lint:types",
-    "start": "yarn w:ui start",
+    "start": "yarn build && yarn w:ui start",
     "test": "dotenv -e .env.${DX_ENV:-'test'} yarn workspaces run test",
     "cypress:open": "cypress open",
     "cypress": "cypress run",
-    "e2e": "DX_ENV=test start-server-and-test start http://localhost:${PORT} cypress:headless",
+    "e2e:ci": "export DX_ENV=test && yarn prisma migrate reset --force && start-server-and-test 'yarn start' http://localhost:${PORT:-'3000'} 'yarn cypress'",
     "w:domain": "dotenv -e .env.${DX_ENV:-'development'} -- yarn workspace domain-logic",
     "w:jobs": "dotenv -e .env.${DX_ENV:-'development'} -- yarn workspace jobs",
     "w:ui": "dotenv -e .env.${DX_ENV:-'development'} -- yarn workspace ui"

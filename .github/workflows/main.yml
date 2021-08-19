@@ -50,6 +50,7 @@ jobs:
     env:
       DATABASE_URL: postgres://postgres:postgres@localhost/postgres
       CHANNEL: channel
+      PORT: 3000
 
     services:
       postgres:

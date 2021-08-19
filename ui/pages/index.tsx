@@ -1,4 +1,3 @@
-import { InferGetStaticPropsType } from 'next'
 import { stories } from 'domain-logic/stories'
 import useSWR from 'swr'
 import StoryForm from 'components/homepage/story-form'
@@ -6,12 +5,8 @@ import StoryItem from 'components/story-item'
 import FooterInfo from 'components/footer-info'
 import { useState } from 'react'
 
-export default function TodosPage({
-  initialData,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
-  const { data } = useSWR('stories', stories.all.run, {
-    initialData,
-  })
+export default function TodosPage() {
+  const { data } = useSWR('stories', stories.all.run)
   const [editing, setEditing] = useState<string | null>(null)
 
   return (
@@ -37,13 +32,4 @@ export default function TodosPage({
       <FooterInfo />
     </div>
   )
-}
-
-export const getStaticProps = async () => {
-  const initialData = await stories.all.run()
-
-  return {
-    props: { initialData },
-    revalidate: 10,
-  }
 }

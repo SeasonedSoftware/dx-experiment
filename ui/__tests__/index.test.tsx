@@ -1,10 +1,12 @@
 import TodosPage from 'pages/index'
 import { render, screen } from '@testing-library/react'
-import '@testing-library/jest-dom'
+import { Story } from '@prisma/client'
 
 describe('TodosPage', () => {
   it('renders', () => {
-    render(<TodosPage initialData={[]} />)
+    render(
+      <TodosPage/>
+    )
 
     expect(screen.getByText(/Stories/)).toBeInTheDocument()
   })

@@ -1,13 +1,15 @@
 import { PrismaClient } from '@prisma/client'
 
-import { stories } from './seed-data/stories'
+import { createDummyData } from './dummy-data'
+import { createSeedData } from './seed-data'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  for (let data of stories) {
-    await prisma.story.create({ data })
-  }
+  createSeedData(prisma)
+  if (process.env.DX_ENV !== 'development') return
+
+  createDummyData(prisma)
 }
 
 main()

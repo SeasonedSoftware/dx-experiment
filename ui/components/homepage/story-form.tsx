@@ -1,6 +1,6 @@
-import { Prisma, Story } from '@prisma/client'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { stories } from 'domain-logic/stories'
+import type { Story } from 'domain-logic/stories'
 import { isEmpty } from 'lodash'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { mutate } from 'swr'
@@ -8,7 +8,7 @@ import { createParser } from 'domain-logic/stories/parsers'
 import { Input } from 'components/forms/input'
 import { useEffect } from 'react'
 
-type Inputs = Pick<Prisma.StoryCreateInput, 'asA' | 'iWant' | 'soThat'>
+type Inputs = Pick<Story, 'asA' | 'iWant' | 'soThat'>
 
 type Props = {
   list?: Story[]

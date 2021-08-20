@@ -27,7 +27,6 @@ export default function StoryForm({ list, editing, setEditing }: Props) {
         ? await stories.update.run({ ...data, id: editing! })
         : await stories.create.run(data)
       mutate('stories')
-      reset()
       setEditing(null)
       setFocus('asA')
     }
@@ -37,7 +36,6 @@ export default function StoryForm({ list, editing, setEditing }: Props) {
     const story = list?.find(({ id }) => id === editing)
     reset({ asA: story?.asA, iWant: story?.iWant, soThat: story?.soThat })
   }, [editing])
-
   return (
     <form
       className="flex flex-col w-full gap-1 shadow-lg divide-y divide-gray-200 dark:divide-gray-700"
@@ -64,6 +62,15 @@ export default function StoryForm({ list, editing, setEditing }: Props) {
       >
         {editing ? 'Save' : 'Create'}
       </button>
+      {editing && (
+        <button
+          className="p-4 text-2xl bg-blue-400 dark:bg-blue-900 text-center"
+          type="button"
+          onClick={() => setEditing(null)}
+        >
+          Cancel
+        </button>
+      )}
     </form>
   )
 }

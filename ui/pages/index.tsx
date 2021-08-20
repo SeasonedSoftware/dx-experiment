@@ -6,8 +6,25 @@ import FooterInfo from 'components/footer-info'
 import { useState } from 'react'
 
 export default function TodosPage() {
-  const { data } = useSWR('stories', stories.all.run)
+  const { data, mutate } = useSWR('stories', stories.all.run)
   const [editing, setEditing] = useState<string | null>(null)
+
+  const changePosition =
+    (
+      storyId: string,
+      relativePosition: 'before' | 'after',
+      storyAnchor?: string
+    ) =>
+    async () => {
+      if (!storyAnchor) return
+
+      const list = await stories.setPosition.run({
+        storyAnchor,
+        relativePosition,
+        storyId,
+      })
+      mutate(list, false)
+    }
 
   return (
     <div className="flex flex-col w-screen min-h-screen overflow-y-auto p-4 items-center justify-center bg-gray-50 dark:bg-gray-900 dark:text-white">
@@ -24,8 +41,22 @@ export default function TodosPage() {
           id="backlog"
           className="flex-grow flex flex-col w-full border border-gray-800 dark:border-gray-700 border-opacity-20 divide-y divide-gray-800 dark:divide-gray-700 divide-opacity-20"
         >
-          {data?.map((story) => (
-            <StoryItem key={story.id} story={story} setEditing={setEditing} />
+          {data?.map((story, idx) => (
+            <StoryItem
+              key={story.id}
+              story={story}
+              setEditing={setEditing}
+              onClickBefore={changePosition(
+                story.id,
+                'before',
+                data[idx - 1]?.id
+              )}
+              onClickAfter={changePosition(
+                story.id,
+                'after',
+                data[idx + 1]?.id
+              )}
+            />
           ))}
         </div>
       </main>

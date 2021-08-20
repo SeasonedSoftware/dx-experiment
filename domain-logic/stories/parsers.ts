@@ -13,4 +13,10 @@ const updateParser = z.object({
   soThat: z.string().nonempty(),
 })
 
-export { createParser, updateParser }
+const positionParser = z.object({
+  storyId: z.string().nonempty(),
+  storyAnchor: z.string().nonempty(),
+  relativePosition: z.enum(['after', 'before']),
+})
+
+export { createParser, updateParser, positionParser }

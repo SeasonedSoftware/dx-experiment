@@ -11,4 +11,8 @@
       @apply outline-none ring ring-green-400;
     }
   }
+
+  .capitalize-first::first-letter {
+    @apply uppercase;
+  }
 }

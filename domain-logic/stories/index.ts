@@ -1,5 +1,5 @@
 import { Story as DbStory } from '@prisma/client'
-import { getPrisma } from '../db'
+import { getPrisma } from 'db'
 import { makeAction, exportDomain } from '../prelude'
 import { createParser, updateParser, positionParser } from './parsers'
 
@@ -54,7 +54,7 @@ const stories = exportDomain('stories', {
           anchor.position +
           (afterAnchor?.position
             ? (afterAnchor.position - anchor.position) / 2
-            : anchor.position + 1)
+            : 1)
       } else {
         const beforeAnchor = await getPrisma().story.findFirst({
           orderBy: { position: 'desc' },
@@ -66,7 +66,7 @@ const stories = exportDomain('stories', {
           anchor.position -
           (beforeAnchor?.position
             ? (anchor.position - beforeAnchor.position) / 2
-            : anchor.position - 1)
+            : 1)
       }
       await getPrisma().story.update({
         where: { id: input.storyId },

@@ -1,5 +1,5 @@
 import { Story as DbStory } from '@prisma/client'
-import { getPrisma } from 'db'
+import { getPrisma } from '../db'
 import { makeAction, exportDomain } from '../prelude'
 import { createParser, updateParser, positionParser } from './parsers'
 

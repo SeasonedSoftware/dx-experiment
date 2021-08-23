@@ -13,7 +13,7 @@ describe('setPosition', () => {
     const params = {
       storyId: story.id,
       storyAnchor: 'fbec550d-71a2-4a0f-893e-dadef90424d1',
-      relativePosition: 'after' as 'after',
+      relativePosition: 'after' as const,
     }
 
     expect.assertions(1)
@@ -60,7 +60,7 @@ describe('setPosition', () => {
     const params = {
       storyId: story.id,
       storyAnchor: anchor.id,
-      relativePosition: 'after' as 'after',
+      relativePosition: 'after' as const,
     }
     await setPosition.run(params)
 
@@ -95,7 +95,7 @@ describe('setPosition', () => {
     const params = {
       storyId: story.id,
       storyAnchor: anchor.id,
-      relativePosition: 'after' as 'after',
+      relativePosition: 'after' as const,
     }
     await setPosition.run(params)
 
@@ -134,7 +134,7 @@ describe('setPosition', () => {
     const params = {
       storyId: story.id,
       storyAnchor: anchor.id,
-      relativePosition: 'before' as 'before',
+      relativePosition: 'before' as const,
     }
     await setPosition.run(params)
 
@@ -165,7 +165,7 @@ describe('setPosition', () => {
     const params = {
       storyId: story.id,
       storyAnchor: anchor.id,
-      relativePosition: 'before' as 'before',
+      relativePosition: 'before' as const,
     }
     await setPosition.run(params)
 

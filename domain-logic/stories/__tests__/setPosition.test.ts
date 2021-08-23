@@ -5,6 +5,10 @@ const setPosition = stories.setPosition
 
 describe('setPosition', () => {
   beforeEach(clearDatabase)
+  afterAll(async () => {
+    await getPrisma().$disconnect()
+  })
+
   it('throws error if an anchor is not found', async () => {
     const story = await getPrisma().story.create({
       data: { asA: 'user', iWant: 'to', soThat: 'I can test' },

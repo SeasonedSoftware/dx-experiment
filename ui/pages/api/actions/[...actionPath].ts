@@ -34,7 +34,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       isNil(maybeRequestedAction) && requestedAction ? requestedAction : null
 
     console.log({
-      resolvedAction,
       namespace,
       requestedAction,
       method: req.method!.toLowerCase(),

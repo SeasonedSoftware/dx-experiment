@@ -10,9 +10,7 @@ class AppDocument extends Document {
   render() {
     return (
       <Html>
-        <Head>
-          <link rel="stylesheet" href="/styles.css" />
-        </Head>
+        <Head />
         <body className="overflow-x-hidden w-screen h-screen">
           <Main />
           <NextScript />

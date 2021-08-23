@@ -21,6 +21,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@heroicons/react": "^1.0.4",
     "@hookform/resolvers": "^2.7.1",
     "axios": "0.21.1",
     "babel-plugin-superjson-next": "^0.3.1",

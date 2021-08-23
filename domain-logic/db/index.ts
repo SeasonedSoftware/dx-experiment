@@ -20,4 +20,17 @@ const getPrisma = () =>
     }
   )
 
-export { getPrisma }
+const clearDatabase = async () => {
+  const allTables = await getPrisma().$queryRaw(
+    "select schemaname, tablename from pg_tables where schemaname NOT IN ('pg_catalog', 'information_schema') AND tablename <> '_prisma_migrations'"
+  )
+  const truncateCommands = allTables.map(
+    (table: { schemaname: string; tablename: string }) =>
+      getPrisma().$executeRaw(
+        `TRUNCATE "${table.schemaname}"."${table.tablename}" CASCADE`
+      )
+  )
+  await getPrisma().$transaction(truncateCommands)
+}
+
+export { getPrisma, clearDatabase }

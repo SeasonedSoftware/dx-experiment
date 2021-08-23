@@ -539,6 +539,11 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
+"@heroicons/react@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@heroicons/react/-/react-1.0.4.tgz#11847eb2ea5510419d7ada9ff150a33af0ad0863"
+  integrity sha512-3kOrTmo8+Z8o6AL0rzN82MOf8J5CuxhRLFhpI8mrn+3OqekA6d5eb1GYO3EYYo1Vn6mYQSMNTzCWbEwUInb0cQ==
+
 "@hookform/resolvers@^2.7.1":
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/@hookform/resolvers/-/resolvers-2.7.1.tgz#691f02a82b44317dc30df44765463f2eb73abf09"

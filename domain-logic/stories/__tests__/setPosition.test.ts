@@ -32,7 +32,7 @@ describe('setPosition', () => {
     const params = {
       storyId: 'fbec550d-71a2-4a0f-893e-dadef90424d1',
       storyAnchor: anchor.id,
-      relativePosition: 'after' as 'after',
+      relativePosition: 'after' as const,
     }
 
     expect.assertions(1)

@@ -6,10 +6,10 @@ import { createSeedData } from './seed-data'
 const prisma = new PrismaClient()
 
 async function main() {
-  createSeedData(prisma)
+  await createSeedData(prisma)
   if (process.env.DX_ENV !== 'development') return
 
-  createDummyData(prisma)
+  await createDummyData(prisma)
 }
 
 main()

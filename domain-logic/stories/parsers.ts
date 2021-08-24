@@ -19,4 +19,9 @@ const positionParser = z.object({
   relativePosition: z.enum(['after', 'before']),
 })
 
-export { createParser, updateParser, positionParser }
+const addScenarioParser = z.object({
+  storyId: z.string().nonempty(),
+  description: z.string().nonempty(),
+})
+
+export { createParser, updateParser, positionParser, addScenarioParser }

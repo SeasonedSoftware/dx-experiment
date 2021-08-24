@@ -23,4 +23,21 @@ describe('addScenario', () => {
       // this string is from a Prisma error message we should probably have our own error here
     }
   })
+
+  it('creates scenario if story and description are given', async () => {
+    const story = await getPrisma().story.create({
+      data: { asA: 'user', iWant: 'to', soThat: 'I can test' },
+    })
+    const params = {
+      storyId: story.id,
+      description: 'some scenario',
+    }
+
+    await addScenario.run(params)
+    expect(
+      await getPrisma().scenario.count({
+        where: { storyId: { equals: story.id } },
+      })
+    ).toBe(1)
+  })
 })

@@ -15,12 +15,12 @@ export default function StoryItem({
 }: Props) {
   return (
     <details className="group w-full cursor-pointer">
-      <summary className="flex justify-between text-xl p-4 py-3 font-semibold">
+      <summary className="flex items-start justify-between text-xl p-4 py-3 font-semibold">
         <span className="capitalize-first">{story.iWant}</span>
         <div className="flex border rounded divide-x">
           <button
             type="button"
-            className="px-2 group-first:hidden"
+            className="p-2 group-first:hidden"
             onClick={onClickBefore}
             aria-label="Mover para cima"
           >
@@ -28,7 +28,7 @@ export default function StoryItem({
           </button>
           <button
             type="button"
-            className="px-2 group-last:hidden"
+            className="p-2 group-last:hidden"
             onClick={onClickAfter}
             aria-label="Mover para baixo"
           >

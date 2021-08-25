@@ -9,7 +9,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       <input
         ref={ref}
         {...props}
-        className="p-4 text-2xl w-full dark:bg-gray-800 dark:placeholder-gray-600"
+        className="p-4 text-lg w-full dark:bg-gray-800 dark:placeholder-gray-600"
       />
       {error?.message && (
         <p className="text-center p-1 bg-red-300 text-red-800">

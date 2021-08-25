@@ -5,7 +5,7 @@ import StoryItem from 'components/story-item'
 import FooterInfo from 'components/footer-info'
 import { useState } from 'react'
 
-export default function TodosPage() {
+export default function HomePage() {
   const { data, mutate } = useSWR('stories', stories.all.run)
   const [editing, setEditing] = useState<string | null>(null)
 

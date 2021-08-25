@@ -9,7 +9,7 @@ describe('addScenario', () => {
     await getPrisma().$disconnect()
   })
 
-  it('throws error if an story is not found', async () => {
+  it('throws an error if a story is not found', async () => {
     const params = {
       storyId: 'fbec550d-71a2-4a0f-893e-dadef90424d1',
       description: 'some scenario',

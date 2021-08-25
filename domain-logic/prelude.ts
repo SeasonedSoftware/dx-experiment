@@ -74,8 +74,13 @@ const exportDomain = <T extends Actions>(namespace: string, domain: T): T => {
       return serverOrBrowser(
         () => oldRun(input),
         async () => {
+          const qs = input ? new URLSearchParams(input).toString() : null
+          const path =
+            domain[key].mutation || typeof qs !== 'string'
+              ? key
+              : [key, qs].join('?')
           const result = await fetch(
-            `/api/actions/${namespace}/${key}`,
+            `/api/actions/${namespace}/${path}`,
             domain[key].mutation
               ? {
                   method: 'POST',

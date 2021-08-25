@@ -1,3 +1,4 @@
+import { cx } from '@/lib/utils'
 import { forwardRef } from 'react'
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -9,7 +10,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       <input
         ref={ref}
         {...props}
-        className="p-4 text-lg w-full dark:bg-gray-800 dark:placeholder-gray-600"
+        className={cx("p-4 text-lg w-full dark:bg-gray-800 dark:placeholder-gray-600", props.className)}
       />
       {error?.message && (
         <p className="text-center p-1 bg-red-300 text-red-800">

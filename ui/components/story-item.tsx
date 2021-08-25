@@ -1,5 +1,7 @@
 import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/outline'
 import { Story } from 'domain-logic/stories'
+import Scenarios from './scenarios'
+import { useRef, useState } from 'react'
 
 type Props = {
   story: Story
@@ -13,8 +15,21 @@ export default function StoryItem({
   onClickBefore,
   onClickAfter,
 }: Props) {
+  const [isOpen, setIsOpen] = useState(false)
+  const ref = useRef<HTMLDetailsElement>(null)
+
+  const toggleHandler = (ev: React.MouseEvent<HTMLDetailsElement>) => {
+    setTimeout(() => {
+      setIsOpen(Boolean(ref.current?.open))
+    }, 1)
+  }
+
   return (
-    <details className="group w-full cursor-pointer">
+    <details
+      ref={ref}
+      onClick={toggleHandler}
+      className="group w-full cursor-pointer"
+    >
       <summary className="flex items-start justify-between text-xl p-4 py-3 font-semibold">
         <span className="capitalize-first">{story.iWant}</span>
         <div className="flex border rounded divide-x">
@@ -49,6 +64,7 @@ export default function StoryItem({
           {story.createdAt.toLocaleDateString()}
         </p>
       </div>
+      {isOpen && <Scenarios story={story} />}
     </details>
   )
 }

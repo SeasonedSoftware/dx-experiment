@@ -24,4 +24,12 @@ const addScenarioParser = z.object({
   description: z.string().nonempty(),
 })
 
-export { createParser, updateParser, positionParser, addScenarioParser }
+const storyScenarioParser = z.object({ id: z.string().nonempty() })
+
+export {
+  createParser,
+  updateParser,
+  positionParser,
+  addScenarioParser,
+  storyScenarioParser,
+}

@@ -10,9 +10,9 @@ describe('Home page', () => {
   it('creates a new story', () => {
     cy.document().then((doc) => {
       const storiesLength = doc.querySelectorAll('details').length
-      cy.get('input[name="asA"]').type('User')
-      cy.get('input[name="iWant"]').type('Add a new story')
-      cy.get('input[name="soThat"]').type('I can test the app')
+      cy.get('textarea[name="asA"]').type('User')
+      cy.get('textarea[name="iWant"]').type('Add a new story')
+      cy.get('textarea[name="soThat"]').type('I can test the app')
       cy.get('button[type="submit"]').click()
       cy.get('details').should('have.length', storiesLength + 1)
     })

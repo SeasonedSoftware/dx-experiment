@@ -5,7 +5,6 @@ import { isEmpty } from 'lodash'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { mutate } from 'swr'
 import { createParser } from 'domain-logic/stories/parsers'
-import { Input } from 'components/forms/input'
 import { useEffect } from 'react'
 import { TextArea } from 'components/forms/textarea'
 

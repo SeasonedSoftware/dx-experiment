@@ -98,3 +98,4 @@ const stories = exportDomain('stories', {
 
 export { stories }
 export type { Story }
+export type { Scenario } from '@prisma/client'

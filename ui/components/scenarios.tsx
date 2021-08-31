@@ -1,28 +1,45 @@
 import { stories, Story } from 'domain-logic/stories'
 import { TextArea } from './forms/textarea'
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import type { Scenario } from 'domain-logic/stories'
+import { isEmpty } from 'lodash'
 
 type Props = {
   story: Story
 }
-export default function Scenario({ story }: Props) {
-  const { data } = useSWR(`scenarios-${story.id}`, () =>
+
+type Inputs = Pick<Scenario, 'description'>
+
+export default function Scenarios({ story }: Props) {
+  const swrKey = `scenarios-${story.id}`
+
+  const { data } = useSWR(swrKey, () =>
     stories.storyScenarios.run({ id: story.id })
   )
+  const { register, reset, setFocus, handleSubmit, formState } =
+    useForm<Inputs>()
 
-  const handleSubmit: React.FormEventHandler = (ev) => {
-    ev.preventDefault()
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    if (isEmpty(formState.errors)) {
+      await stories.addScenario.run({
+        storyId: story.id,
+        description: data.description,
+      })
+      mutate(swrKey)
+    }
   }
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="p-4 flex flex-col">
+      <form onSubmit={handleSubmit(onSubmit)} className="p-4 flex flex-col">
         <label htmlFor="description">Scenario</label>
         <TextArea
           className="mt-2"
           rows={3}
-          name="description"
           placeholder={`Given ...\nWhen ...\nThen ...`}
+          {...register('description')}
+          error={formState.errors.description}
         />
         <button
           className="self-end p-2 bg-blue-400 dark:bg-blue-900"

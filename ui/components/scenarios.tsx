@@ -27,6 +27,7 @@ export default function Scenarios({ story }: Props) {
         description: data.description,
       })
       mutate(swrKey)
+      reset()
     }
   }
 

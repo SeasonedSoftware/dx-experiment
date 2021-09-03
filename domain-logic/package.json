@@ -12,7 +12,7 @@
     "dev": "prisma generate && yarn migrate && tsc --watch",
     "lint:types": "tsc --project tsconfig.json --noEmit",
     "migrate": "prisma migrate deploy --preview-feature",
-    "test": "jest"
+    "test": "jest --runInBand"
   },
   "dependencies": {},
   "devDependencies": {

@@ -5,8 +5,8 @@ import { isEmpty } from 'lodash'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { mutate } from 'swr'
 import { createParser } from 'domain-logic/stories/parsers'
-import { Input } from 'components/forms/input'
 import { useEffect } from 'react'
+import { TextArea } from 'components/forms/textarea'
 
 type Inputs = Pick<Story, 'asA' | 'iWant' | 'soThat'>
 
@@ -41,19 +41,22 @@ export default function StoryForm({ list, editing, setEditing }: Props) {
       className="flex flex-col w-full gap-1 shadow-lg divide-y divide-gray-200 dark:divide-gray-700"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <Input
+      <TextArea
         {...register('asA')}
-        placeholder="As a"
+        label="As a"
+        placeholder="Some role"
         error={formState.errors.asA}
       />
-      <Input
+      <TextArea
         {...register('iWant')}
-        placeholder="I want to"
+        label="I want to"
+        placeholder="Do something"
         error={formState.errors.iWant}
       />
-      <Input
+      <TextArea
         {...register('soThat')}
-        placeholder="So that"
+        label="So that"
+        placeholder="I gain some value"
         error={formState.errors.soThat}
       />
       <button

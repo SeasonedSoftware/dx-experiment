@@ -2,12 +2,13 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { Action, findAction, onAction } from 'domain-logic'
 import isNil from 'lodash/isNil'
 import superjson from 'superjson'
+import { ZodTypeAny } from 'zod';
 
 const findHttpAction = findAction('http')
 
 const makeHandler =
   (action: Action) =>
-  async (input: any, req: NextApiRequest, res: NextApiResponse) => {
+  async (input: ZodTypeAny | undefined, req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'GET' && action.mutation) {
       res.setHeader('Allow', 'POST, PATCH, PUT, DELETE')
       return res.status(405).end()
@@ -40,7 +41,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       id,
     })
 
-    const body = req.body ? superjson.parse(req.body) : undefined
-    return makeHandler(resolvedAction)(body, req, res)
+    const body: object = req.body ? superjson.parse(req.body) : {}
+    const input = { ...body, ...req.query } as object as ZodTypeAny
+    return makeHandler(resolvedAction)(input, req, res)
   }
 }

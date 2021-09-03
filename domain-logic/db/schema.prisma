@@ -15,6 +15,18 @@ model Story {
   createdAt DateTime @unique @default(now()) @map("created_at") @db.Timestamp(6)
   position  Float    @unique @default(dbgenerated("(nextval('story_position'::regclass))::double precision"))
 
+  scenarios Scenario[]
   @@unique([asA, iWant, soThat])
   @@map("story")
+}
+
+model Scenario {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  story       Story    @relation(fields: [storyId], references: [id])
+  storyId     String   @map("story_id") @db.Uuid
+  description String
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@unique([storyId, description])
+  @@map("scenario")
 }

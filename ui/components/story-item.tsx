@@ -1,5 +1,7 @@
 import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/outline'
 import { Story } from 'domain-logic/stories'
+import Scenarios from './scenarios'
+import { useRef, useState } from 'react'
 
 type Props = {
   story: Story
@@ -13,14 +15,27 @@ export default function StoryItem({
   onClickBefore,
   onClickAfter,
 }: Props) {
+  const [isOpen, setIsOpen] = useState(false)
+  const ref = useRef<HTMLDetailsElement>(null)
+
+  const toggleHandler = (ev: React.MouseEvent<HTMLDetailsElement>) => {
+    setTimeout(() => {
+      setIsOpen(Boolean(ref.current?.open))
+    }, 1)
+  }
+
   return (
-    <details className="group w-full cursor-pointer">
-      <summary className="flex justify-between text-xl p-4 py-3 font-semibold">
+    <details
+      ref={ref}
+      onClick={toggleHandler}
+      className="group w-full cursor-pointer"
+    >
+      <summary className="flex items-start justify-between text-xl p-4 py-3 font-semibold">
         <span className="capitalize-first">{story.iWant}</span>
         <div className="flex border rounded divide-x">
           <button
             type="button"
-            className="px-2 group-first:hidden"
+            className="p-2 group-first:hidden"
             onClick={onClickBefore}
             aria-label="Mover para cima"
           >
@@ -28,7 +43,7 @@ export default function StoryItem({
           </button>
           <button
             type="button"
-            className="px-2 group-last:hidden"
+            className="p-2 group-last:hidden"
             onClick={onClickAfter}
             aria-label="Mover para baixo"
           >
@@ -49,6 +64,7 @@ export default function StoryItem({
           {story.createdAt.toLocaleDateString()}
         </p>
       </div>
+      {isOpen && <Scenarios story={story} />}
     </details>
   )
 }

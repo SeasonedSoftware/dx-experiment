@@ -1,5 +1,6 @@
 import { z, ZodTypeAny } from 'zod'
 import zipObject from 'lodash/zipObject'
+import isEmpty from 'lodash/isEmpty'
 import superjson from 'superjson'
 
 const ALL_TRANSPORTS = [
@@ -74,15 +75,20 @@ const exportDomain = <T extends Actions>(namespace: string, domain: T): T => {
       return serverOrBrowser(
         () => oldRun(input),
         async () => {
-          const result = await fetch(
-            `/api/actions/${namespace}/${key}`,
-            domain[key].mutation
-              ? {
-                  method: 'POST',
-                  body: superjson.stringify(input),
-                }
-              : {}
-          )
+          let fetchPromise = null
+          if (domain[key].mutation) {
+            fetchPromise = fetch(`/api/actions/${namespace}/${key}`, {
+              method: 'POST',
+              body: superjson.stringify(input),
+            })
+          } else {
+            const qs = isEmpty(input)
+              ? key
+              : key + '?' + new URLSearchParams(input).toString()
+
+            fetchPromise = fetch(`/api/actions/${namespace}/${qs}`)
+          }
+          const result = await fetchPromise
           const json = superjson.parse(await result.text())
           if (!result.ok) {
             throw json

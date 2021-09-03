@@ -1,7 +1,13 @@
-import { Story as DbStory } from '@prisma/client'
+import { Scenario, Story as DbStory } from '@prisma/client'
 import { getPrisma } from '../db'
 import { makeAction, exportDomain } from '../prelude'
-import { createParser, updateParser, positionParser } from './parsers'
+import {
+  createParser,
+  updateParser,
+  positionParser,
+  addScenarioParser,
+  storyScenarioParser,
+} from './parsers'
 
 type Story = Omit<DbStory, 'position'>
 
@@ -31,6 +37,18 @@ const stories = exportDomain('stories', {
       where: { id: input.id },
       data: input,
     })
+  ),
+  addScenario: mutation<void, typeof addScenarioParser>(addScenarioParser)(
+    async (input) => {
+      await getPrisma().scenario.create({
+        data: input,
+      })
+    }
+  ),
+  storyScenarios: query<Scenario[], typeof storyScenarioParser>(
+    storyScenarioParser
+  )(async (input) =>
+    getPrisma().scenario.findMany({ where: { storyId: input.id } })
   ),
   setPosition: mutation<Story[], typeof positionParser>(positionParser)(
     async (input) => {
@@ -80,3 +98,4 @@ const stories = exportDomain('stories', {
 
 export { stories }
 export type { Story }
+export type { Scenario } from '@prisma/client'

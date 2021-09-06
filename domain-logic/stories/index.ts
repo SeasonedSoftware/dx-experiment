@@ -7,6 +7,7 @@ import {
   positionParser,
   addScenarioParser,
   storyScenarioParser,
+  justAnIdParser,
 } from './parsers'
 
 type Story = Omit<DbStory, 'position'>
@@ -49,6 +50,15 @@ const stories = exportDomain('stories', {
     storyScenarioParser
   )(async (input) =>
     getPrisma().scenario.findMany({ where: { storyId: input.id } })
+  ),
+  approveScenario: mutation<void, typeof justAnIdParser>(justAnIdParser)(
+    async (input) => {
+      await getPrisma().scenarioApproval.upsert({
+        where: { scenarioId: input.id },
+        create: { scenarioId: input.id },
+        update: {},
+      })
+    }
   ),
   setPosition: mutation<Story[], typeof positionParser>(positionParser)(
     async (input) => {

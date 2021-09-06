@@ -33,11 +33,12 @@ export default function Scenarios({ story }: Props) {
 
   const approveScenario = (scenarioId: string) => async () => {
     await stories.approveScenario.run({ id: scenarioId })
+    mutate(swrKey)
   }
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="p-4 flex flex-col">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col p-4">
         <label htmlFor="description">Scenario</label>
         <TextArea
           className="mt-2"
@@ -55,10 +56,12 @@ export default function Scenarios({ story }: Props) {
       </form>
       {data?.map((scenario) => (
         <div
-          className="m-4 pb-2 text-sm border-b last:border-b-0"
+          className="pb-2 m-4 text-sm border-b last:border-b-0"
           key={scenario.id}
         >
-          <p>{scenario.description}</p>
+          <p>
+            {scenario.description} - {scenario.approved}
+          </p>
           <p className="mt-2 text-xs text-right text-gray-900 text-opacity-60 dark:text-white dark:text-opacity-50">
             {scenario.createdAt.toLocaleDateString()}
           </p>

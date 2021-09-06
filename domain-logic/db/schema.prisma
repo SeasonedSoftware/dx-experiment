@@ -27,7 +27,7 @@ model Scenario {
   description String
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
-  ScenarioApproval ScenarioApproval[]
+  approval ScenarioApproval[]
   @@unique([storyId, description])
   @@map("scenario")
 }

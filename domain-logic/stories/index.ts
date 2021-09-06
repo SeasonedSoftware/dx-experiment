@@ -1,6 +1,11 @@
-import { Scenario, Story as DbStory } from '@prisma/client'
+import {
+  Scenario as DbScenario,
+  ScenarioApproval,
+  Story as DbStory,
+} from '@prisma/client'
 import { getPrisma } from '../db'
 import { makeAction, exportDomain } from '../prelude'
+import { Prisma } from '@prisma/client'
 import {
   createParser,
   updateParser,
@@ -11,6 +16,7 @@ import {
 } from './parsers'
 
 type Story = Omit<DbStory, 'position'>
+type Scenario = DbScenario
 
 const { query, mutation } = makeAction.http
 
@@ -49,7 +55,22 @@ const stories = exportDomain('stories', {
   storyScenarios: query<Scenario[], typeof storyScenarioParser>(
     storyScenarioParser
   )(async (input) =>
-    getPrisma().scenario.findMany({ where: { storyId: input.id } })
+    (
+      await getPrisma().$queryRaw<Scenario[]>`
+      SELECT
+        s.id,
+        s.story_id as "storyId",
+        s.description,
+        s.created_at as "createdAt"
+      FROM scenario s
+      WHERE NOT EXISTS (SELECT FROM scenario_approval sa WHERE sa.scenario_id = s.id)
+      AND s.story_id = ${input.id}`
+    ).map(({ id, storyId, description, createdAt }) => ({
+      id,
+      storyId,
+      description,
+      createdAt: new Date(createdAt),
+    }))
   ),
   approveScenario: mutation<void, typeof justAnIdParser>(justAnIdParser)(
     async (input) => {
@@ -107,5 +128,4 @@ const stories = exportDomain('stories', {
 })
 
 export { stories }
-export type { Story }
-export type { Scenario } from '@prisma/client'
+export type { Story, Scenario }

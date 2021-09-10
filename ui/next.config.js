@@ -15,9 +15,13 @@ module.exports = withTM({
 // The declaration below will allow Youtube Videos and Google Fonts
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' *.youtube.com;
+  script-src 'self'${
+    process.env.NODE_ENV === 'development' ? ` 'unsafe-eval'` : ''
+  } *.youtube.com;
   child-src *.youtube.com;
-  style-src 'self' 'unsafe-inline' *.googleapis.com;
+  style-src 'self'${
+    process.env.NODE_ENV === 'development' ? ` 'unsafe-inline'` : ''
+  } *.googleapis.com;
   img-src * blob: data:;
   media-src 'none';
   font-src 'self';

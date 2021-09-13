@@ -9,7 +9,7 @@ describe('storyScenarios', () => {
     await getPrisma().$disconnect()
   })
 
-  it('shows scenarios that have no approval', async () => {
+  it('shows scenarios without approvals', async () => {
     const story = await getPrisma().story.create({
       data: { asA: 'user', iWant: 'to', soThat: 'I can test' },
     })
@@ -23,9 +23,10 @@ describe('storyScenarios', () => {
     const scenarios = await storyScenarios.run(params)
 
     expect(scenarios.length).toBe(1)
+    expect(scenarios[0].approved).toBeFalsy()
   })
 
-  it('hides scenario if it has an approval', async () => {
+  it('shows scenario with approvals', async () => {
     const story = await getPrisma().story.create({
       data: { asA: 'user', iWant: 'to', soThat: 'I can test' },
     })
@@ -42,6 +43,7 @@ describe('storyScenarios', () => {
 
     const scenarios = await storyScenarios.run(params)
 
-    expect(scenarios.length).toBe(0)
+    expect(scenarios.length).toBe(1)
+    expect(scenarios[0].approved).toBeTruthy()
   })
 })

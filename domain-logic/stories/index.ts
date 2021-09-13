@@ -1,11 +1,7 @@
-import {
-  Scenario as DbScenario,
-  ScenarioApproval,
-  Story as DbStory,
-} from '@prisma/client'
+import { Scenario as DbScenario, Story as DbStory } from '@prisma/client'
 import { getPrisma } from '../db'
 import { makeAction, exportDomain } from '../prelude'
-import { Prisma } from '@prisma/client'
+
 import {
   createParser,
   updateParser,
@@ -35,16 +31,15 @@ const stories = exportDomain('stories', {
       orderBy: [{ position: 'asc' }],
     })
   ),
-  create: mutation<Story, typeof createParser>(createParser)(async (input) =>
-    getPrisma().story.create({ select: visibleAttributes, data: input })
-  ),
-  update: mutation<Story, typeof updateParser>(updateParser)(async (input) =>
-    getPrisma().story.update({
-      select: visibleAttributes,
+  create: mutation<void, typeof createParser>(createParser)(async (input) => {
+    await getPrisma().story.create({ data: input })
+  }),
+  update: mutation<void, typeof updateParser>(updateParser)(async (input) => {
+    await getPrisma().story.update({
       where: { id: input.id },
       data: input,
     })
-  ),
+  }),
   addScenario: mutation<void, typeof addScenarioParser>(addScenarioParser)(
     async (input) => {
       await getPrisma().scenario.create({

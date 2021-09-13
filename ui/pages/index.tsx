@@ -41,23 +41,25 @@ export default function HomePage() {
           id="backlog"
           className="flex-grow flex flex-col w-full border border-gray-800 dark:border-gray-700 border-opacity-20 divide-y divide-gray-800 dark:divide-gray-700 divide-opacity-20"
         >
-          {data?.map((story, idx) => (
-            <StoryItem
-              key={story.id}
-              story={story}
-              setEditing={setEditing}
-              onClickBefore={changePosition(
-                story.id,
-                'before',
-                data[idx - 1]?.id
-              )}
-              onClickAfter={changePosition(
-                story.id,
-                'after',
-                data[idx + 1]?.id
-              )}
-            />
-          ))}
+          {data
+            ?.filter((story) => story.state == 'pending')
+            .map((story, idx) => (
+              <StoryItem
+                key={story.id}
+                story={story}
+                setEditing={setEditing}
+                onClickBefore={changePosition(
+                  story.id,
+                  'before',
+                  data[idx - 1]?.id
+                )}
+                onClickAfter={changePosition(
+                  story.id,
+                  'after',
+                  data[idx + 1]?.id
+                )}
+              />
+            ))}
         </div>
       </main>
       <FooterInfo />

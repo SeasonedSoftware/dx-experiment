@@ -11,26 +11,39 @@ import {
   justAnIdParser,
 } from './parsers'
 
-type Story = Omit<DbStory, 'position'>
+type StoryState = 'pending' | 'approved'
+type Story = Omit<DbStory, 'position'> & { state: StoryState }
 type Scenario = DbScenario & { approved: boolean }
 
 const { query, mutation } = makeAction.http
 
-const visibleAttributes = {
-  id: true,
-  asA: true,
-  iWant: true,
-  soThat: true,
-  createdAt: true,
-}
+const fetchStories = async () =>
+  (
+    await getPrisma().$queryRaw<Story[]>`
+    SELECT
+      s.id,
+      as_a as "asA",
+      i_want as "iWant",
+      so_that as "soThat",
+      created_at as "createdAt",
+      CASE
+        WHEN NOT EXISTS (SELECT FROM scenario sc WHERE sc.story_id = s.id) THEN 'pending'
+        WHEN (SELECT count(*) FROM scenario sc WHERE sc.story_id = s.id) > (SELECT count(*) FROM scenario sc JOIN scenario_approval sa ON sa.scenario_id = sc.id WHERE sc.story_id = s.id) THEN 'pending'
+        ELSE 'approved'
+      END as state
+    FROM story s
+    ORDER BY position ASC`
+  ).map(({ id, asA, iWant, soThat, createdAt, state }) => ({
+    id,
+    asA,
+    iWant,
+    soThat,
+    createdAt: new Date(createdAt),
+    state,
+  }))
 
 const stories = exportDomain('stories', {
-  all: query<Story[]>()(async () =>
-    getPrisma().story.findMany({
-      select: visibleAttributes,
-      orderBy: [{ position: 'asc' }],
-    })
-  ),
+  all: query<Story[]>()(fetchStories),
   create: mutation<void, typeof createParser>(createParser)(async (input) => {
     await getPrisma().story.create({ data: input })
   }),
@@ -118,7 +131,7 @@ const stories = exportDomain('stories', {
         data: { position },
       })
 
-      return getPrisma().story.findMany({ orderBy: { position: 'asc' } })
+      return fetchStories()
     }
   ),
 })

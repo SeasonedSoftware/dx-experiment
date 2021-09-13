@@ -4,6 +4,7 @@ import useSWR, { mutate } from 'swr'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import type { Scenario } from 'domain-logic/stories'
 import { isEmpty } from 'lodash'
+import { cx } from '@/lib/utils'
 
 type Props = {
   story: Story
@@ -59,7 +60,7 @@ export default function Scenarios({ story }: Props) {
           className="pb-2 m-4 text-sm border-b last:border-b-0"
           key={scenario.id}
         >
-          <p>
+          <p className={cx(scenario.approved && 'text-green-500')}>
             {scenario.description} - {scenario.approved}
           </p>
           <p className="mt-2 text-xs text-right text-gray-900 text-opacity-60 dark:text-white dark:text-opacity-50">

@@ -16,7 +16,7 @@ import {
 } from './parsers'
 
 type Story = Omit<DbStory, 'position'>
-type Scenario = DbScenario
+type Scenario = DbScenario & { approved: boolean }
 
 const { query, mutation } = makeAction.http
 
@@ -61,15 +61,16 @@ const stories = exportDomain('stories', {
         s.id,
         s.story_id as "storyId",
         s.description,
-        s.created_at as "createdAt"
+        s.created_at as "createdAt",
+        EXISTS (SELECT FROM scenario_approval sa WHERE sa.scenario_id = s.id) as approved
       FROM scenario s
-      WHERE NOT EXISTS (SELECT FROM scenario_approval sa WHERE sa.scenario_id = s.id)
-      AND s.story_id = ${input.id}`
-    ).map(({ id, storyId, description, createdAt }) => ({
+      WHERE s.story_id = ${input.id}`
+    ).map(({ id, storyId, description, createdAt, approved }) => ({
       id,
       storyId,
       description,
       createdAt: new Date(createdAt),
+      approved,
     }))
   ),
   approveScenario: mutation<void, typeof justAnIdParser>(justAnIdParser)(

@@ -16,6 +16,8 @@ model Story {
   position  Float    @unique @default(dbgenerated("(nextval('story_position'::regclass))::double precision"))
 
   scenarios Scenario[]
+
+  state StoryState @default(PENDING)
   @@unique([asA, iWant, soThat])
   @@map("story")
 }
@@ -28,6 +30,7 @@ model Scenario {
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(6)
 
   approval ScenarioApproval[]
+
   @@unique([storyId, description])
   @@map("scenario")
 }
@@ -40,4 +43,11 @@ model ScenarioApproval {
 
   @@unique([scenarioId])
   @@map("scenario_approval")
+}
+
+enum StoryState {
+  PENDING
+  APPROVED
+
+  @@map("story_state")
 }

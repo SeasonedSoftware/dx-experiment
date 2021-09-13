@@ -4,6 +4,7 @@ import useSWR, { mutate } from 'swr'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import type { Scenario } from 'domain-logic/stories'
 import { isEmpty } from 'lodash'
+import { cx } from '@/lib/utils'
 
 type Props = {
   story: Story
@@ -31,9 +32,14 @@ export default function Scenarios({ story }: Props) {
     }
   }
 
+  const approveScenario = (scenarioId: string) => async () => {
+    await stories.approveScenario.run({ id: scenarioId })
+    mutate(swrKey)
+  }
+
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="p-4 flex flex-col">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col p-4">
         <label htmlFor="description">Scenario</label>
         <TextArea
           className="mt-2"
@@ -49,15 +55,23 @@ export default function Scenarios({ story }: Props) {
           Add scenario
         </button>
       </form>
-      {data?.map((item) => (
+      {data?.map((scenario) => (
         <div
-          className="m-4 pb-2 text-sm border-b last:border-b-0"
-          key={item.id}
+          className="pb-2 m-4 text-sm border-b last:border-b-0"
+          key={scenario.id}
         >
-          <p>{item.description}</p>
-          <p className="mt-2 text-xs text-right text-gray-900 text-opacity-60 dark:text-white dark:text-opacity-50">
-            {item.createdAt.toLocaleDateString()}
+          <p className={cx(scenario.approved && 'text-green-500')}>
+            {scenario.description} - {scenario.approved}
           </p>
+          <p className="mt-2 text-xs text-right text-gray-900 text-opacity-60 dark:text-white dark:text-opacity-50">
+            {scenario.createdAt.toLocaleDateString()}
+          </p>
+          <button
+            onClick={approveScenario(scenario.id)}
+            className="text-lg text-green-600"
+          >
+            ✔
+          </button>
         </div>
       ))}
     </>

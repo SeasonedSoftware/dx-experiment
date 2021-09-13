@@ -1,15 +1,18 @@
-import { Scenario, Story as DbStory } from '@prisma/client'
+import { Scenario as DbScenario, Story as DbStory } from '@prisma/client'
 import { getPrisma } from '../db'
 import { makeAction, exportDomain } from '../prelude'
+
 import {
   createParser,
   updateParser,
   positionParser,
   addScenarioParser,
   storyScenarioParser,
+  justAnIdParser,
 } from './parsers'
 
 type Story = Omit<DbStory, 'position'>
+type Scenario = DbScenario & { approved: boolean }
 
 const { query, mutation } = makeAction.http
 
@@ -28,16 +31,15 @@ const stories = exportDomain('stories', {
       orderBy: [{ position: 'asc' }],
     })
   ),
-  create: mutation<Story, typeof createParser>(createParser)(async (input) =>
-    getPrisma().story.create({ select: visibleAttributes, data: input })
-  ),
-  update: mutation<Story, typeof updateParser>(updateParser)(async (input) =>
-    getPrisma().story.update({
-      select: visibleAttributes,
+  create: mutation<void, typeof createParser>(createParser)(async (input) => {
+    await getPrisma().story.create({ data: input })
+  }),
+  update: mutation<void, typeof updateParser>(updateParser)(async (input) => {
+    await getPrisma().story.update({
       where: { id: input.id },
       data: input,
     })
-  ),
+  }),
   addScenario: mutation<void, typeof addScenarioParser>(addScenarioParser)(
     async (input) => {
       await getPrisma().scenario.create({
@@ -48,7 +50,32 @@ const stories = exportDomain('stories', {
   storyScenarios: query<Scenario[], typeof storyScenarioParser>(
     storyScenarioParser
   )(async (input) =>
-    getPrisma().scenario.findMany({ where: { storyId: input.id } })
+    (
+      await getPrisma().$queryRaw<Scenario[]>`
+      SELECT
+        s.id,
+        s.story_id as "storyId",
+        s.description,
+        s.created_at as "createdAt",
+        EXISTS (SELECT FROM scenario_approval sa WHERE sa.scenario_id = s.id) as approved
+      FROM scenario s
+      WHERE s.story_id = ${input.id}`
+    ).map(({ id, storyId, description, createdAt, approved }) => ({
+      id,
+      storyId,
+      description,
+      createdAt: new Date(createdAt),
+      approved,
+    }))
+  ),
+  approveScenario: mutation<void, typeof justAnIdParser>(justAnIdParser)(
+    async (input) => {
+      await getPrisma().scenarioApproval.upsert({
+        where: { scenarioId: input.id },
+        create: { scenarioId: input.id },
+        update: {},
+      })
+    }
   ),
   setPosition: mutation<Story[], typeof positionParser>(positionParser)(
     async (input) => {
@@ -97,5 +124,4 @@ const stories = exportDomain('stories', {
 })
 
 export { stories }
-export type { Story }
-export type { Scenario } from '@prisma/client'
+export type { Story, Scenario }

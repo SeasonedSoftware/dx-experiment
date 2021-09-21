@@ -5,14 +5,16 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import type { Scenario } from 'domain-logic/stories'
 import { isEmpty } from 'lodash'
 import { cx } from '@/lib/utils'
+import type { MutatorCallback } from 'swr/dist/types'
 
 type Props = {
-  story: Story
+  story: Story,
+  mutateStories: (data?: Story[] | Promise<Story[]> | MutatorCallback<Story[]>, shouldRevalidate?: boolean) => Promise<Story[] | undefined>
 }
 
 type Inputs = Pick<Scenario, 'description'>
 
-export default function Scenarios({ story }: Props) {
+export default function Scenarios({ story, mutateStories }: Props) {
   const swrKey = `scenarios-${story.id}`
 
   const { data } = useSWR(swrKey, () =>
@@ -28,6 +30,7 @@ export default function Scenarios({ story }: Props) {
         description: data.description,
       })
       mutate(swrKey)
+      mutateStories()
       reset()
     }
   }
@@ -35,6 +38,7 @@ export default function Scenarios({ story }: Props) {
   const approveScenario = (scenarioId: string) => async () => {
     await stories.approveScenario.run({ id: scenarioId })
     mutate(swrKey)
+    mutateStories()
   }
 
   return (

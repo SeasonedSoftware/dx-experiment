@@ -47,6 +47,7 @@ export default function HomePage() {
               <StoryItem
                 key={story.id}
                 story={story}
+                mutateStories={mutate}
                 setEditing={setEditing}
                 onClickBefore={changePosition(
                   story.id,

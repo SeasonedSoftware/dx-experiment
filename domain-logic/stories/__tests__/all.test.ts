@@ -1,7 +1,7 @@
-import { stories } from 'stories'
+import { stories as storiesActions } from 'stories'
 import { getPrisma, clearDatabase } from 'db'
 
-const all = stories.all
+const all = storiesActions.all
 
 describe('all', () => {
   beforeEach(clearDatabase)

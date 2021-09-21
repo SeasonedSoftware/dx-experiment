@@ -2,18 +2,21 @@ import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/outline'
 import { Story } from 'domain-logic/stories'
 import Scenarios from './scenarios'
 import { useRef, useState } from 'react'
+import type { MutatorCallback } from 'swr/dist/types'
 
 type Props = {
   story: Story
   setEditing: (a: string | null) => void
   onClickBefore: React.MouseEventHandler
-  onClickAfter: React.MouseEventHandler
+  onClickAfter: React.MouseEventHandler,
+  mutateStories: (data?: Story[] | Promise<Story[]> | MutatorCallback<Story[]>, shouldRevalidate?: boolean) => Promise<Story[] | undefined>
 }
 export default function StoryItem({
   story,
   setEditing,
   onClickBefore,
   onClickAfter,
+  mutateStories
 }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const ref = useRef<HTMLDetailsElement>(null)
@@ -64,7 +67,7 @@ export default function StoryItem({
           {story.createdAt.toLocaleDateString()}
         </p>
       </div>
-      {isOpen && <Scenarios story={story} />}
+      {isOpen && <Scenarios story={story} mutateStories={mutateStories} />}
     </details>
   )
 }

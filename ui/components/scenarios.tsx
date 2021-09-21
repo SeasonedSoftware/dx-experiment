@@ -65,7 +65,7 @@ export default function Scenarios({ story, mutateStories }: Props) {
           key={scenario.id}
         >
           <p className={cx(scenario.approved && 'text-green-500')}>
-            {scenario.description} - {scenario.approved}
+            <pre>{scenario.description}</pre>
           </p>
           <p className="mt-2 text-xs text-right text-gray-900 text-opacity-60 dark:text-white dark:text-opacity-50">
             {scenario.createdAt.toLocaleDateString()}

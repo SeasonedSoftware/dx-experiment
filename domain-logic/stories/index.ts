@@ -42,6 +42,24 @@ const fetchStories = async () =>
     state,
   }))
 
+const fetchScenarios = async ({id}: {id: string}) => (
+  await getPrisma().$queryRaw<Scenario[]>`
+  SELECT
+    s.id,
+    s.story_id as "storyId",
+    s.description,
+    s.created_at as "createdAt",
+    EXISTS (SELECT FROM scenario_approval sa WHERE sa.scenario_id = s.id) as approved
+  FROM scenario s
+  WHERE s.story_id = ${id}`
+  ).map(({ id, storyId, description, createdAt, approved }) => ({
+    id,
+    storyId,
+    description,
+    createdAt: new Date(createdAt),
+    approved,
+  }))
+
 const stories = exportDomain('stories', {
   all: query<Story[]>()(fetchStories),
   create: mutation<void, typeof createParser>(createParser)(async (input) => {
@@ -62,25 +80,7 @@ const stories = exportDomain('stories', {
   ),
   storyScenarios: query<Scenario[], typeof storyScenarioParser>(
     storyScenarioParser
-  )(async (input) =>
-    (
-      await getPrisma().$queryRaw<Scenario[]>`
-      SELECT
-        s.id,
-        s.story_id as "storyId",
-        s.description,
-        s.created_at as "createdAt",
-        EXISTS (SELECT FROM scenario_approval sa WHERE sa.scenario_id = s.id) as approved
-      FROM scenario s
-      WHERE s.story_id = ${input.id}`
-    ).map(({ id, storyId, description, createdAt, approved }) => ({
-      id,
-      storyId,
-      description,
-      createdAt: new Date(createdAt),
-      approved,
-    }))
-  ),
+  )(fetchScenarios),
   approveScenario: mutation<void, typeof justAnIdParser>(justAnIdParser)(
     async (input) => {
       await getPrisma().scenarioApproval.upsert({

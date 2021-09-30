@@ -97,6 +97,16 @@ const stories = exportDomain('stories', {
     }
   ),
 
+  markStoryReady: mutation<void, typeof justAnIdParser>(justAnIdParser)(
+    async (input) => {
+      await getPrisma().storyReady.upsert({
+        where: { storyId: input.id },
+        create: { storyId: input.id },
+        update: {},
+      })
+    }
+  ),
+
   setPosition: mutation<Story[], typeof positionParser>(positionParser)(
     async (input) => {
       const anchor = await getPrisma().story.findFirst({

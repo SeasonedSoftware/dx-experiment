@@ -42,8 +42,9 @@ const fetchStories = async () =>
     state,
   }))
 
-const fetchScenarios = async ({id}: {id: string}) => (
-  await getPrisma().$queryRaw<Scenario[]>`
+const fetchScenarios = async ({ id }: { id: string }) =>
+  (
+    await getPrisma().$queryRaw<Scenario[]>`
   SELECT
     s.id,
     s.story_id as "storyId",
@@ -62,15 +63,18 @@ const fetchScenarios = async ({id}: {id: string}) => (
 
 const stories = exportDomain('stories', {
   all: query<Story[]>()(fetchStories),
+
   create: mutation<void, typeof createParser>(createParser)(async (input) => {
     await getPrisma().story.create({ data: input })
   }),
+
   update: mutation<void, typeof updateParser>(updateParser)(async (input) => {
     await getPrisma().story.update({
       where: { id: input.id },
       data: input,
     })
   }),
+
   addScenario: mutation<void, typeof addScenarioParser>(addScenarioParser)(
     async (input) => {
       await getPrisma().scenario.create({
@@ -78,9 +82,11 @@ const stories = exportDomain('stories', {
       })
     }
   ),
+
   storyScenarios: query<Scenario[], typeof storyScenarioParser>(
     storyScenarioParser
   )(fetchScenarios),
+
   approveScenario: mutation<void, typeof justAnIdParser>(justAnIdParser)(
     async (input) => {
       await getPrisma().scenarioApproval.upsert({
@@ -90,6 +96,7 @@ const stories = exportDomain('stories', {
       })
     }
   ),
+
   setPosition: mutation<Story[], typeof positionParser>(positionParser)(
     async (input) => {
       const anchor = await getPrisma().story.findFirst({

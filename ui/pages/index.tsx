@@ -1,8 +1,8 @@
 import { stories } from 'domain-logic/stories'
 import useSWR from 'swr'
 import StoryForm from 'components/homepage/story-form'
-import StoryItem from 'components/story-item'
 import FooterInfo from 'components/footer-info'
+import FilteredStories from 'components/filtered-stories'
 import { useState } from 'react'
 
 export default function HomePage() {
@@ -27,9 +27,9 @@ export default function HomePage() {
     }
 
   return (
-    <div className="flex flex-col w-screen min-h-screen overflow-y-auto p-4 items-center justify-center bg-gray-50 dark:bg-gray-900 dark:text-white">
-      <header className="border-b border-gray-200 dark:border-gray-800 w-full pb-3">
-        <h1 className="text-center text-4xl text-red-800 dark:text-green-600 font-thin">
+    <div className="flex flex-col items-center justify-center w-screen min-h-screen p-4 overflow-y-auto bg-gray-50 dark:bg-gray-900 dark:text-white">
+      <header className="w-full pb-3 border-b border-gray-200 dark:border-gray-800">
+        <h1 className="text-4xl font-thin text-center text-red-800 dark:text-green-600">
           Stories
         </h1>
       </header>
@@ -37,30 +37,21 @@ export default function HomePage() {
         <section className="flex flex-col justify-center items-center w-full md:min-w-[20rem] bg-white dark:bg-gray-800">
           <StoryForm setEditing={setEditing} list={data} editing={editing} />
         </section>
-        <div
-          id="backlog"
-          className="flex-grow flex flex-col w-full border border-gray-800 dark:border-gray-700 border-opacity-20 divide-y divide-gray-800 dark:divide-gray-700 divide-opacity-20"
-        >
-          {data
-            ?.filter((story) => story.state == 'pending')
-            .map((story, idx) => (
-              <StoryItem
-                key={story.id}
-                story={story}
-                mutateStories={mutate}
-                setEditing={setEditing}
-                onClickBefore={changePosition(
-                  story.id,
-                  'before',
-                  data[idx - 1]?.id
-                )}
-                onClickAfter={changePosition(
-                  story.id,
-                  'after',
-                  data[idx + 1]?.id
-                )}
-              />
-            ))}
+        <div className="flex flex-col gap-2">
+          <FilteredStories
+            stories={data}
+            filterByState="ready"
+            changePosition={changePosition}
+            mutateStories={mutate}
+            setEditing={setEditing}
+          />
+          <FilteredStories
+            stories={data}
+            filterByState="pending"
+            changePosition={changePosition}
+            mutateStories={mutate}
+            setEditing={setEditing}
+          />
         </div>
       </main>
       <FooterInfo />

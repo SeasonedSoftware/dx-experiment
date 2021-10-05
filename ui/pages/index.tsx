@@ -33,10 +33,28 @@ export default function HomePage() {
           Stories
         </h1>
       </header>
-      <main className="flex flex-col flex-grow md:flex-row gap-8 items-center md:items-start pt-6 md:max-w-[50rem] w-full">
+      <main className="flex flex-col flex-grow md:flex-row gap-8 items-center md:items-start pt-6 md:max-w-[60rem] w-full">
+        <div
+          id="backlog"
+          className="flex-grow flex flex-col w-full border border-gray-800 dark:border-gray-700 border-opacity-20 divide-y divide-gray-800 dark:divide-gray-700 divide-opacity-20"
+        >
+          {data
+            ?.filter((story) => story.state == 'approved')
+            .map((story, idx) => (
+              <StoryItem
+                key={story.id}
+                story={story}
+                mutateStories={async () => undefined}
+                setEditing={() => null}
+                onClickBefore={() => null}
+                onClickAfter={() => null}
+              />
+            ))}
+        </div>
         <section className="flex flex-col justify-center items-center w-full md:min-w-[20rem] bg-white dark:bg-gray-800">
           <StoryForm setEditing={setEditing} list={data} editing={editing} />
         </section>
+
         <div
           id="backlog"
           className="flex-grow flex flex-col w-full border border-gray-800 dark:border-gray-700 border-opacity-20 divide-y divide-gray-800 dark:divide-gray-700 divide-opacity-20"

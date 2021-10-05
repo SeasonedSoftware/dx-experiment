@@ -13,7 +13,16 @@ jest.mock('swr', () => {
       createdAt: new Date(),
     }
 
-    return { data: [pendingStory] }
+    const approvedStory: Story = {
+      id: 'some id',
+      asA: 'product owner',
+      iWant: 'approve stories',
+      soThat: 'I track progress',
+      state: 'approved',
+      createdAt: new Date(),
+    }
+
+    return { data: [pendingStory, approvedStory] }
   }
 })
 
@@ -29,6 +38,14 @@ describe('TodosPage', () => {
 
     expect(
       screen.getAllByText(/write test files/).length
+    ).toBeGreaterThanOrEqual(2)
+  })
+
+  it('renders completed story titles', () => {
+    render(<TodosPage />)
+
+    expect(
+      screen.getAllByText(/approve stories/).length
     ).toBeGreaterThanOrEqual(2)
   })
 })

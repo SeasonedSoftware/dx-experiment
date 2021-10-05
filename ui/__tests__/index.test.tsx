@@ -29,6 +29,6 @@ describe('TodosPage', () => {
 
     expect(
       screen.getAllByText(/write test files/).length
-    ).toBeGreaterThanOrEqual(1)
+    ).toBeGreaterThanOrEqual(2)
   })
 })

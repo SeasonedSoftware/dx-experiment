@@ -7,14 +7,9 @@ import { isEmpty } from 'lodash'
 import { cx } from '@/lib/utils'
 import type { MutatorCallback } from 'swr/dist/types'
 
-type Props = {
-  story: Story,
-  mutateStories: (data?: Story[] | Promise<Story[]> | MutatorCallback<Story[]>, shouldRevalidate?: boolean) => Promise<Story[] | undefined>
-}
-
+type Props = { story: Story }
 type Inputs = Pick<Scenario, 'description'>
-
-export default function Scenarios({ story, mutateStories }: Props) {
+export default function Scenarios({ story }: Props) {
   const swrKey = `scenarios-${story.id}`
 
   const { data } = useSWR(swrKey, () =>
@@ -30,7 +25,7 @@ export default function Scenarios({ story, mutateStories }: Props) {
         description: data.description,
       })
       mutate(swrKey)
-      mutateStories()
+      mutate('stories')
       reset()
     }
   }
@@ -38,7 +33,7 @@ export default function Scenarios({ story, mutateStories }: Props) {
   const approveScenario = (scenarioId: string) => async () => {
     await stories.approveScenario.run({ id: scenarioId })
     mutate(swrKey)
-    mutateStories()
+    mutate('stories')
   }
 
   return (

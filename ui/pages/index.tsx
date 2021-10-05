@@ -1,30 +1,16 @@
-import { stories } from 'domain-logic/stories'
+import { stories, Story } from 'domain-logic/stories'
 import useSWR from 'swr'
 import StoryForm from 'components/homepage/story-form'
 import FooterInfo from 'components/footer-info'
-import FilteredStories from 'components/filtered-stories'
 import { useState } from 'react'
+import StoriesList from 'components/stories-list'
+import { groupBy } from 'lodash'
 
 export default function HomePage() {
-  const { data, mutate } = useSWR('stories', stories.all.run)
+  const { data } = useSWR('stories', stories.all.run)
   const [editing, setEditing] = useState<string | null>(null)
 
-  const changePosition =
-    (
-      storyId: string,
-      relativePosition: 'before' | 'after',
-      storyAnchor?: string
-    ) =>
-    async () => {
-      if (!storyAnchor) return
-
-      const list = await stories.setPosition.run({
-        storyAnchor,
-        relativePosition,
-        storyId,
-      })
-      mutate(list, false)
-    }
+  const storyGroups = groupBy(data, 'state') as Record<Story['state'], Story[]>
 
   return (
     <div className="flex flex-col items-center justify-center w-screen min-h-screen p-4 overflow-y-auto bg-gray-50 dark:bg-gray-900 dark:text-white">
@@ -33,23 +19,31 @@ export default function HomePage() {
           Stories
         </h1>
       </header>
-      <main className="flex flex-col flex-grow md:flex-row gap-8 items-center md:items-start pt-6 md:max-w-[50rem] w-full">
-        <section className="flex flex-col justify-center items-center w-full md:min-w-[20rem] bg-white dark:bg-gray-800">
+      <main className="flex flex-col items-center flex-grow w-full gap-8 pt-6 md:flex-row md:items-start">
+        <section className="flex flex-col items-center justify-center w-full bg-white md:w-96 dark:bg-gray-800">
           <StoryForm setEditing={setEditing} list={data} editing={editing} />
         </section>
-        <div className="flex flex-col gap-2">
-          <FilteredStories
-            stories={data}
-            filterByState="ready"
-            changePosition={changePosition}
-            mutateStories={mutate}
+        <div className="flex flex-col w-full gap-4 md:w-96">
+          <StoriesList
+            items={storyGroups.ready ?? []}
+            title="Ready for development"
             setEditing={setEditing}
           />
-          <FilteredStories
-            stories={data}
-            filterByState="pending"
-            changePosition={changePosition}
-            mutateStories={mutate}
+          <StoriesList
+            items={storyGroups.pending ?? []}
+            title="Draft"
+            setEditing={setEditing}
+          />
+        </div>
+        <div className="flex flex-col w-full gap-4 md:w-96">
+          <StoriesList
+            items={[]}
+            title="In development"
+            setEditing={setEditing}
+          />
+          <StoriesList
+            items={storyGroups.approved ?? []}
+            title="Done"
             setEditing={setEditing}
           />
         </div>

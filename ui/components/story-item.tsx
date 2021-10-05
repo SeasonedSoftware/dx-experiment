@@ -10,17 +10,12 @@ type Props = {
   setEditing: (a: string | null) => void
   onClickBefore: React.MouseEventHandler
   onClickAfter: React.MouseEventHandler
-  mutateStories: (
-    data?: Story[] | Promise<Story[]> | MutatorCallback<Story[]>,
-    shouldRevalidate?: boolean
-  ) => Promise<Story[] | undefined>
 }
 export default function StoryItem({
   story,
   setEditing,
   onClickBefore,
   onClickAfter,
-  mutateStories,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const ref = useRef<HTMLDetailsElement>(null)
@@ -71,7 +66,7 @@ export default function StoryItem({
           {story.createdAt.toLocaleDateString()}
         </p>
       </div>
-      {isOpen && <Scenarios story={story} mutateStories={mutateStories} />}
+      {isOpen && <Scenarios story={story} />}
       {story.state === 'pending' && (
         <div className="flex flex-col p-4">
           <button

@@ -16,7 +16,7 @@ model Story {
   position  Float    @unique @default(dbgenerated("(nextval('story_position'::regclass))::double precision"))
 
   scenarios  Scenario[]
-  storyReady StoryReady[]
+  storyReady StoryReady?
   @@unique([asA, iWant, soThat])
   @@map("story")
 }

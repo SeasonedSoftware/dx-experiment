@@ -1,66 +1,51 @@
-import { stories } from 'domain-logic/stories'
+import { stories, Story } from 'domain-logic/stories'
 import useSWR from 'swr'
 import StoryForm from 'components/homepage/story-form'
-import StoryItem from 'components/story-item'
 import FooterInfo from 'components/footer-info'
 import { useState } from 'react'
+import StoriesList from 'components/stories-list'
+import { groupBy } from 'lodash'
 
 export default function HomePage() {
-  const { data, mutate } = useSWR('stories', stories.all.run)
+  const { data } = useSWR('stories', stories.all.run)
   const [editing, setEditing] = useState<string | null>(null)
 
-  const changePosition =
-    (
-      storyId: string,
-      relativePosition: 'before' | 'after',
-      storyAnchor?: string
-    ) =>
-    async () => {
-      if (!storyAnchor) return
-
-      const list = await stories.setPosition.run({
-        storyAnchor,
-        relativePosition,
-        storyId,
-      })
-      mutate(list, false)
-    }
+  const storyGroups = groupBy(data, 'state') as Record<Story['state'], Story[]>
 
   return (
-    <div className="flex flex-col w-screen min-h-screen overflow-y-auto p-4 items-center justify-center bg-gray-50 dark:bg-gray-900 dark:text-white">
-      <header className="border-b border-gray-200 dark:border-gray-800 w-full pb-3">
-        <h1 className="text-center text-4xl text-red-800 dark:text-green-600 font-thin">
+    <div className="flex flex-col items-center justify-center w-screen min-h-screen p-4 overflow-y-auto bg-gray-50 dark:bg-gray-900 dark:text-white">
+      <header className="w-full pb-3 border-b border-gray-200 dark:border-gray-800">
+        <h1 className="text-4xl font-thin text-center text-red-800 dark:text-green-600">
           Stories
         </h1>
       </header>
-      <main className="flex flex-col flex-grow md:flex-row gap-8 items-center md:items-start pt-6 md:max-w-[50rem] w-full">
-        <section className="flex flex-col justify-center items-center w-full md:min-w-[20rem] bg-white dark:bg-gray-800">
+      <main className="flex flex-col items-center flex-grow w-full gap-8 pt-6 md:flex-row md:items-start">
+        <section className="flex flex-col items-center justify-center w-full bg-white md:w-96 dark:bg-gray-800">
           <StoryForm setEditing={setEditing} list={data} editing={editing} />
         </section>
-        <div
-          id="backlog"
-          className="flex-grow flex flex-col w-full border border-gray-800 dark:border-gray-700 border-opacity-20 divide-y divide-gray-800 dark:divide-gray-700 divide-opacity-20"
-        >
-          {data
-            ?.filter((story) => story.state == 'pending')
-            .map((story, idx) => (
-              <StoryItem
-                key={story.id}
-                story={story}
-                mutateStories={mutate}
-                setEditing={setEditing}
-                onClickBefore={changePosition(
-                  story.id,
-                  'before',
-                  data[idx - 1]?.id
-                )}
-                onClickAfter={changePosition(
-                  story.id,
-                  'after',
-                  data[idx + 1]?.id
-                )}
-              />
-            ))}
+        <div className="flex flex-col w-full gap-4 md:w-96">
+          <StoriesList
+            items={storyGroups.ready ?? []}
+            title="Ready for development"
+            setEditing={setEditing}
+          />
+          <StoriesList
+            items={storyGroups.pending ?? []}
+            title="Draft"
+            setEditing={setEditing}
+          />
+        </div>
+        <div className="flex flex-col w-full gap-4 md:w-96">
+          <StoriesList
+            items={[]}
+            title="In development"
+            setEditing={setEditing}
+          />
+          <StoriesList
+            items={storyGroups.approved ?? []}
+            title="Done"
+            setEditing={setEditing}
+          />
         </div>
       </main>
       <FooterInfo />

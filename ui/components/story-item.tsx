@@ -1,5 +1,6 @@
 import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/outline'
-import { Story } from 'domain-logic/stories'
+import { Story, stories } from 'domain-logic/stories'
+import { mutate } from 'swr'
 import Scenarios from './scenarios'
 import { useRef, useState } from 'react'
 import type { MutatorCallback } from 'swr/dist/types'
@@ -8,15 +9,13 @@ type Props = {
   story: Story
   setEditing: (a: string | null) => void
   onClickBefore: React.MouseEventHandler
-  onClickAfter: React.MouseEventHandler,
-  mutateStories: (data?: Story[] | Promise<Story[]> | MutatorCallback<Story[]>, shouldRevalidate?: boolean) => Promise<Story[] | undefined>
+  onClickAfter: React.MouseEventHandler
 }
 export default function StoryItem({
   story,
   setEditing,
   onClickBefore,
   onClickAfter,
-  mutateStories
 }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const ref = useRef<HTMLDetailsElement>(null)
@@ -31,11 +30,11 @@ export default function StoryItem({
     <details
       ref={ref}
       onClick={toggleHandler}
-      className="group w-full cursor-pointer"
+      className="w-full cursor-pointer group"
     >
-      <summary className="flex items-start justify-between text-xl p-4 py-3 font-semibold">
+      <summary className="flex items-start justify-between p-4 py-3 text-xl font-semibold">
         <span className="capitalize-first">{story.iWant}</span>
-        <div className="flex border rounded divide-x">
+        <div className="flex border divide-x rounded">
           <button
             type="button"
             className="p-2 group-first:hidden"
@@ -63,11 +62,24 @@ export default function StoryItem({
           <strong>{story.iWant}</strong> So that <strong>{story.soThat}</strong>
           .
         </p>
-        <p className="mt-2 text-xs text-right font-semibold text-gray-900 text-opacity-60 dark:text-white dark:text-opacity-50">
+        <p className="mt-2 text-xs font-semibold text-right text-gray-900 text-opacity-60 dark:text-white dark:text-opacity-50">
           {story.createdAt.toLocaleDateString()}
         </p>
       </div>
-      {isOpen && <Scenarios story={story} mutateStories={mutateStories} />}
+      {isOpen && <Scenarios story={story} />}
+      {story.state === 'pending' && (
+        <div className="flex flex-col p-4">
+          <button
+            onClick={async () => {
+              await stories.markStoryReady.run({ id: story.id })
+              mutate('stories')
+            }}
+            className="p-2 transition-all bg-green-500 rounded hover:bg-green-600"
+          >
+            mark as ready to start
+          </button>
+        </div>
+      )}
     </details>
   )
 }

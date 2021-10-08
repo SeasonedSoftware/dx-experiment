@@ -13,7 +13,16 @@ jest.mock('swr', () => {
       createdAt: new Date(),
     }
 
-    return { data: [pendingStory] }
+    const readyStory: Story = {
+      id: 'some id',
+      asA: 'developer',
+      iWant: 'To write a new feature',
+      soThat: 'I have confidence',
+      state: 'ready',
+      createdAt: new Date(),
+    }
+
+    return { data: [pendingStory, readyStory] }
   }
 })
 
@@ -31,4 +40,13 @@ describe('TodosPage', () => {
       screen.getAllByText(/write test files/).length
     ).toBeGreaterThanOrEqual(2)
   })
+
+  it('renders story titles for ready stories', () => {
+    render(<TodosPage />)
+
+    expect(
+      screen.getAllByText(/To write a new feature/).length
+    ).toBeGreaterThanOrEqual(2)
+  })
+  
 })

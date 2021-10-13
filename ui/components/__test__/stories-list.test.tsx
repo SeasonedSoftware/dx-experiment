@@ -25,12 +25,12 @@ const stories: Story[] = [
   },
 ]
 
-jest.mock('domain-logic/stories', () => ({
-  ...jest.requireActual('domain-logic/stories'),
-  stories: { markStoryReady: { run: jest.fn() } },
-}))
+// jest.mock('domain-logic/stories', () => ({
+//   ...jest.requireActual('domain-logic/stories'),
+//   stories: { markStoryReady: { run: jest.fn() } },
+// }))
 
-jest.mock('swr', () => ({ ...jest.requireActual('swr'), mutate: jest.fn() }))
+// jest.mock('swr', () => ({ ...jest.requireActual('swr'), mutate: jest.fn() }))
 
 const mockedSetEditing = jest.fn()
 

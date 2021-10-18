@@ -27,13 +27,15 @@ const fetchStories = async () =>
       so_that as "soThat",
       created_at as "createdAt",
       CASE
-        WHEN EXISTS (SELECT FROM story_ready sr WHERE sr.story_id = s.id) THEN 'ready'
+        WHEN NOT EXISTS(SELECT FROM scenario sc
+                      WHERE sc.story_id = s.id) THEN 'pending'
         WHEN (
           SELECT coalesce(bool_and(sa.id IS NOT NULL), false)
           FROM scenario sc
           LEFT JOIN scenario_approval sa ON sa.scenario_id = sc.id
           WHERE sc.story_id = s.id
         ) THEN 'approved'
+        WHEN EXISTS (SELECT FROM story_ready sr WHERE sr.story_id = s.id) THEN 'ready'
         ELSE 'pending'
       END as state
     FROM story s

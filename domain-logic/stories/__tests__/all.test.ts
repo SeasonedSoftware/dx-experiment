@@ -69,4 +69,17 @@ describe('all', () => {
 
     expect(stories[0].state).toBe('approved')
   })
+
+  it('show one story pending when there are no scenarios even if it is marked as ready', async () => {
+    const story = await getPrisma().story.create({
+      data: { asA: 'user', iWant: 'to', soThat: 'I can test' },
+    })
+    await getPrisma().storyReady.create({
+      data: { storyId: story.id },
+    })
+
+    const stories = await all.run()
+
+    expect(stories[0].state).toBe('pending')
+  })
 })

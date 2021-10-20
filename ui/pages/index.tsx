@@ -37,7 +37,7 @@ export default function HomePage() {
         </div>
         <div className="flex flex-col w-full gap-4 md:w-96">
           <StoriesList
-            items={[]}
+            items={storyGroups.development ?? []}
             title="In development"
             setEditing={setEditing}
           />

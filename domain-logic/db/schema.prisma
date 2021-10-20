@@ -17,6 +17,7 @@ model Story {
 
   scenarios  Scenario[]
   storyReady StoryReady?
+  storyDevelopment StoryDevelopment?
   @@unique([asA, iWant, soThat])
   @@map("story")
 }
@@ -51,4 +52,14 @@ model StoryReady {
 
   @@unique([storyId])
   @@map("story_ready")
+}
+
+model StoryDevelopment {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  story     Story    @relation(fields: [storyId], references: [id])
+  storyId   String   @map("story_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@unique([storyId])
+  @@map("story_development")
 }

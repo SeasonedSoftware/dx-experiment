@@ -11,7 +11,7 @@ import {
   justAnIdParser,
 } from './parsers'
 
-type StoryState = 'pending' | 'ready' | 'approved'
+type StoryState = 'pending' | 'ready' | 'approved' | 'development'
 type Story = Omit<DbStory, 'position'> & { state: StoryState }
 type Scenario = DbScenario & { approved: boolean }
 
@@ -35,6 +35,7 @@ const fetchStories = async () =>
           LEFT JOIN scenario_approval sa ON sa.scenario_id = sc.id
           WHERE sc.story_id = s.id
         ) THEN 'approved'
+        WHEN EXISTS (SELECT FROM story_development sd WHERE sd.story_id = s.id) THEN 'development'
         WHEN EXISTS (SELECT FROM story_ready sr WHERE sr.story_id = s.id) THEN 'ready'
         ELSE 'pending'
       END as state
@@ -107,6 +108,16 @@ const stories = exportDomain('stories', {
   markStoryReady: mutation<void, typeof justAnIdParser>(justAnIdParser)(
     async (input) => {
       await getPrisma().storyReady.upsert({
+        where: { storyId: input.id },
+        create: { storyId: input.id },
+        update: {},
+      })
+    }
+  ),
+
+  markStoryDevelopment: mutation<void, typeof justAnIdParser>(justAnIdParser)(
+    async (input) => {
+      await getPrisma().storyDevelopment.upsert({
         where: { storyId: input.id },
         create: { storyId: input.id },
         update: {},

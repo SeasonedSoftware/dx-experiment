@@ -80,6 +80,19 @@ export default function StoryItem({
           </button>
         </div>
       )}
+      {story.state === 'ready' && (
+        <div className="flex flex-col p-4">
+          <button
+            onClick={async () => {
+              await stories.markStoryDevelopment.run({ id: story.id })
+              mutate('stories')
+            }}
+            className="p-2 transition-all bg-green-500 rounded hover:bg-green-600"
+          >
+            mark as ready to develop
+          </button>
+        </div>
+      )}
     </details>
   )
 }

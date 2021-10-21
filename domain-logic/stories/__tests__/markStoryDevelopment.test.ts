@@ -1,7 +1,7 @@
 import { stories } from 'stories'
 import { getPrisma, clearDatabase } from 'db'
 
-const markStoryDevelopment = stories.markStoryDevelopment
+const { markStoryDevelopment } = stories
 
 describe('markStoryDevelopment', () => {
   beforeEach(clearDatabase)

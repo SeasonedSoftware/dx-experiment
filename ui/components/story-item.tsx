@@ -89,7 +89,7 @@ export default function StoryItem({
             }}
             className="p-2 transition-all bg-green-500 rounded hover:bg-green-600"
           >
-            mark as ready to develop
+            start development
           </button>
         </div>
       )}

@@ -9,7 +9,7 @@ jest.mock('swr', () => {
       asA: 'developer',
       iWant: 'write test files',
       soThat: 'I have confidence',
-      state: 'pending',
+      state: 'draft_with_scenarios',
       createdAt: new Date(),
     }
 
@@ -48,5 +48,5 @@ describe('TodosPage', () => {
       screen.getAllByText(/To write a new feature/).length
     ).toBeGreaterThanOrEqual(2)
   })
-  
+
 })

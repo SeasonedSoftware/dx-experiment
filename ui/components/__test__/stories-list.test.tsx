@@ -12,7 +12,7 @@ const stories: Story[] = [
     asA: 'developer',
     iWant: 'see the stories list',
     soThat: 'I have confidence',
-    state: 'pending',
+    state: 'draft_with_scenarios',
     createdAt: new Date(),
   },
   {
@@ -20,7 +20,7 @@ const stories: Story[] = [
     asA: 'user',
     iWant: 'see the stories list',
     soThat: 'I have confidence',
-    state: 'pending',
+    state: 'draft_with_scenarios',
     createdAt: new Date(),
   },
 ]

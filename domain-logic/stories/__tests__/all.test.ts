@@ -16,7 +16,7 @@ describe('all', () => {
 
     const stories = await all.run()
 
-    expect(stories[0].state).toBe('pending')
+    expect(stories[0].state).toBe('draft')
   })
 
   it('show one story pending when there is one scenario without approval', async () => {
@@ -29,7 +29,7 @@ describe('all', () => {
 
     const stories = await all.run()
 
-    expect(stories[0].state).toBe('pending')
+    expect(stories[0].state).toBe('draft_with_scenarios')
   })
 
   it('show one story approved when there are only approved scenarios', async () => {
@@ -80,6 +80,6 @@ describe('all', () => {
 
     const stories = await all.run()
 
-    expect(stories[0].state).toBe('pending')
+    expect(stories[0].state).toBe('draft')
   })
 })

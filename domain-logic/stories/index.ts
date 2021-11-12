@@ -11,7 +11,7 @@ import {
   justAnIdParser,
 } from './parsers'
 
-type StoryState = 'pending' | 'ready' | 'approved' | 'development'
+type StoryState = 'draft' | 'draft_with_scenarios' | 'ready' | 'approved' | 'development'
 type Story = Omit<DbStory, 'position'> & { state: StoryState }
 type Scenario = DbScenario & { approved: boolean }
 
@@ -28,7 +28,7 @@ const fetchStories = async () =>
       created_at as "createdAt",
       CASE
         WHEN NOT EXISTS(SELECT FROM scenario sc
-                      WHERE sc.story_id = s.id) THEN 'pending'
+                      WHERE sc.story_id = s.id) THEN 'draft'
         WHEN (
           SELECT coalesce(bool_and(sa.id IS NOT NULL), false)
           FROM scenario sc
@@ -37,7 +37,7 @@ const fetchStories = async () =>
         ) THEN 'approved'
         WHEN EXISTS (SELECT FROM story_development sd WHERE sd.story_id = s.id) THEN 'development'
         WHEN EXISTS (SELECT FROM story_ready sr WHERE sr.story_id = s.id) THEN 'ready'
-        ELSE 'pending'
+        ELSE 'draft_with_scenarios'
       END as state
     FROM story s
     ORDER BY position ASC`

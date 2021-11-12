@@ -30,7 +30,7 @@ export default function HomePage() {
             setEditing={setEditing}
           />
           <StoriesList
-            items={storyGroups.pending ?? []}
+            items={(storyGroups.draft ?? []).concat(storyGroups.draft_with_scenarios ?? [])}
             title="Draft"
             setEditing={setEditing}
           />

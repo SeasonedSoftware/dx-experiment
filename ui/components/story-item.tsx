@@ -3,7 +3,6 @@ import { Story, stories } from 'domain-logic/stories'
 import { mutate } from 'swr'
 import Scenarios from './scenarios'
 import { useRef, useState } from 'react'
-import type { MutatorCallback } from 'swr/dist/types'
 
 type Props = {
   story: Story
@@ -20,7 +19,7 @@ export default function StoryItem({
   const [isOpen, setIsOpen] = useState(false)
   const ref = useRef<HTMLDetailsElement>(null)
 
-  const toggleHandler = (ev: React.MouseEvent<HTMLDetailsElement>) => {
+  const toggleHandler = (_ev: React.MouseEvent<HTMLDetailsElement>) => {
     setTimeout(() => {
       setIsOpen(Boolean(ref.current?.open))
     }, 1)
@@ -67,7 +66,7 @@ export default function StoryItem({
         </p>
       </div>
       {isOpen && <Scenarios story={story} />}
-      {story.state === 'pending' && (
+      {story.state === 'draft_with_scenarios' && (
         <div className="flex flex-col p-4">
           <button
             onClick={async () => {

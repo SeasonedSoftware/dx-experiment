@@ -15,8 +15,8 @@ model Story {
   createdAt DateTime @unique @default(now()) @map("created_at") @db.Timestamp(6)
   position  Float    @unique @default(dbgenerated("(nextval('story_position'::regclass))::double precision"))
 
-  scenarios  Scenario[]
-  storyReady StoryReady?
+  scenarios        Scenario[]
+  storyReady       StoryReady?
   storyDevelopment StoryDevelopment?
   @@unique([asA, iWant, soThat])
   @@map("story")

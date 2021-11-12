@@ -66,7 +66,7 @@ export default function StoryItem({
         </p>
       </div>
       {isOpen && <Scenarios story={story} />}
-      {story.state === 'pending' && (
+      {story.state === 'draft_with_scenarios' && (
         <div className="flex flex-col p-4">
           <button
             onClick={async () => {

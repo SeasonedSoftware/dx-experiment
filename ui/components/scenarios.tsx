@@ -5,7 +5,6 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import type { Scenario } from 'domain-logic/stories'
 import { isEmpty } from 'lodash'
 import { cx } from '@/lib/utils'
-import type { MutatorCallback } from 'swr/dist/types'
 
 type Props = { story: Story }
 type Inputs = Pick<Scenario, 'description'>
@@ -15,7 +14,7 @@ export default function Scenarios({ story }: Props) {
   const { data } = useSWR(swrKey, () =>
     stories.storyScenarios.run({ id: story.id })
   )
-  const { register, reset, setFocus, handleSubmit, formState } =
+  const { register, reset, handleSubmit, formState } =
     useForm<Inputs>()
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
